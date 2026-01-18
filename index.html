@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Guoqiang Liu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color: #ffffff;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(4px);
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0;
+      letter-spacing: 0.05em;
+    }
+
+    h2 {
+      font-weight: 300;
+      margin-top: 0.5rem;
+      opacity: 0.85;
+    }
+
+    p {
+      max-width: 600px;
+      margin-top: 1.5rem;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="wave"></canvas>
+
+  <div class="content">
+    <h1>Guoqiang Liu</h1>
+    <h2>Ocean & Wave Turbulence Research</h2>
+    <p>
+      Personal website powered by GitHub Pages.<br />
+      Research interests include wave turbulence, ocean dynamics,
+      and nonlinear processes.
+    </p>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("wave");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    let t = 0;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let y = 0; y < canvas.height; y += 20) {
+        ctx.beginPath();
+        for (let x = 0; x < canvas.width; x += 20) {
+          const noise =
+            Math.sin(x * 0.01 + t) *
+            Math.cos(y * 0.01 + t * 0.7);
+          const yy = y + noise * 30;
+          ctx.lineTo(x, yy);
+        }
+        ctx.strokeStyle = "rgba(100,180,255,0.25)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      t += 0.01;
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+</body>
+</html>
