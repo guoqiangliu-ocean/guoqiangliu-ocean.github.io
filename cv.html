@@ -7,34 +7,53 @@
 <style>
 body {
   margin: 0;
-  font-family: system-ui, -apple-system;
-  background: #fff;
-  color: #000;
+  font-family: "Times New Roman", Times, serif;
+  background: #ffffff;
+  color: #000000;
+  line-height: 1.6;
 }
 
 .topnav {
   position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
-  height: 60px;
+  height: 55px;
   background: #000;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  padding: 0 50px;
+  box-sizing: border-box;
+}
+
+.topnav a {
+  color: white;
+  text-decoration: none;
+  margin-right: 30px;
+}
+
+.topnav a:hover {
+  text-decoration: underline;
+}
+
+main {
+  max-width: 1000px;
+  margin: 120px auto 80px auto;
   padding: 0 40px;
 }
 
-.site-name, .nav-right a {
-  color: white;
-  text-decoration: none;
+h1 {
+  font-size: 28px;
 }
 
-.nav-right a { margin-left: 25px; }
+hr {
+  border: none;
+  border-top: 2px solid #000;
+  margin: 10px 0 20px 0;
+}
 
-.container {
-  margin-top: 120px;
-  padding: 60px;
-  max-width: 900px;
+h3 {
+  margin-top: 30px;
 }
 </style>
 </head>
@@ -42,31 +61,36 @@ body {
 <body>
 
 <nav class="topnav">
-  <a href="index.html" class="site-name">Guoqiang Liu</a>
-  <div class="nav-right">
-    <a href="index.html">Home</a>
-    <a href="cv.html">CV</a>
-    <a href="publications.html">Publications</a>
-    <a href="research.html">Research</a>
-    <a href="contact.html">Contact</a>
-  </div>
+  <a href="index.html">Home</a>
+  <a href="cv.html">CV</a>
+  <a href="publications.html">Publications</a>
+  <a href="research.html">Research</a>
+  <a href="contact.html">Contact</a>
 </nav>
 
-<div class="container">
-  <h1>Curriculum Vitae</h1>
+<main>
+<h1>Curriculum Vitae</h1>
+<hr>
 
-  <h2>Education</h2>
-  <p>Ph.D. in Physical Oceanography, …</p>
+<h3>Education</h3>
+<p>Ph.D. in Physical Oceanography, …</p>
 
-  <h2>Appointments</h2>
-  <p>Associate Professor, …</p>
+<h3>Appointments</h3>
+<p>Associate Professor, …</p>
 
-  <h2>Technical Skills</h2>
-  <ul>
-    <li>MATLAB, Python, Fortran</li>
-    <li>ROMS, SWAN, WRF, CROCO</li>
-  </ul>
-</div>
+<h3>Technical Skills</h3>
+<ul>
+  <li>MATLAB, Python, Fortran, Shell scripting</li>
+  <li>ROMS, SWAN, WRF, CROCO, NEMO</li>
+  <li>Satellite data analysis (SWOT, SAR, scatterometer)</li>
+</ul>
+
+<h3>Recognition</h3>
+<ul>
+  <li>Best Reviewer Award, Ocean Modelling (2016)</li>
+  <li>Editorial Board Member, Ocean Modelling</li>
+</ul>
+</main>
 
 </body>
 </html>
