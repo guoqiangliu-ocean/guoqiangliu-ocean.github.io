@@ -1,96 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>CV | Guoqiang Liu</title>
+  <meta charset="UTF-8">
+  <title>CV | Guoqiang Liu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body {
-  margin: 0;
-  font-family: "Times New Roman", Times, serif;
-  background: #ffffff;
-  color: #000000;
-  line-height: 1.6;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: "Times New Roman", Times, serif;
+      background-color: #ffffff;
+      color: #000000;
+    }
 
-.topnav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 55px;
-  background: #000;
-  display: flex;
-  align-items: center;
-  padding: 0 50px;
-  box-sizing: border-box;
-}
+    /* Top navigation bar */
+    .navbar {
+      background-color: #000;
+      padding: 14px 40px;
+    }
 
-.topnav a {
-  color: white;
-  text-decoration: none;
-  margin-right: 30px;
-}
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      margin-right: 28px;
+      font-size: 18px;
+    }
 
-.topnav a:hover {
-  text-decoration: underline;
-}
+    .navbar a:hover {
+      text-decoration: underline;
+    }
 
-main {
-  max-width: 1000px;
-  margin: 120px auto 80px auto;
-  padding: 0 40px;
-}
+    /* Page container */
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
 
-h1 {
-  font-size: 28px;
-}
+    h1 {
+      font-size: 34px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
 
-hr {
-  border: none;
-  border-top: 2px solid #000;
-  margin: 10px 0 20px 0;
-}
+    h2 {
+      font-size: 24px;
+      margin-top: 40px;
+      margin-bottom: 10px;
+    }
 
-h3 {
-  margin-top: 30px;
-}
-</style>
+    hr {
+      border: none;
+      border-top: 2px solid #000;
+      margin: 10px 0 25px 0;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    ul {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    ol {
+      font-size: 18px;
+      line-height: 1.6;
+      padding-left: 22px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    a.link {
+      color: #003399;
+      text-decoration: none;
+    }
+
+    a.link:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 
 <body>
 
-<nav class="topnav">
-  <a href="index.html">Home</a>
-  <a href="cv.html">CV</a>
-  <a href="publications.html">Publications</a>
-  <a href="research.html">Research</a>
-  <a href="contact.html">Contact</a>
-</nav>
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="cv.html">CV</a>
+    <a href="publications.html">Publications</a>
+    <a href="research.html">Research</a>
+    <a href="contact.html">Contact</a>
+  </div>
 
-<main>
-<h1>Curriculum Vitae</h1>
-<hr>
+  <!-- Main Content -->
+  <div class="container">
 
-<h3>Education</h3>
-<p>Ph.D. in Physical Oceanography, …</p>
+    <h1>Curriculum Vitae</h1>
+    <hr>
 
-<h3>Appointments</h3>
-<p>Associate Professor, …</p>
+    <!-- Summary -->
+    <h2>Summary</h2>
+    <p>
+      Physical oceanographer specializing in air–sea interaction, surface waves,
+      upper-ocean dynamics, data assimilation, and coupled ocean–wave–atmosphere
+      modeling, with applications to extreme weather, satellite remote sensing,
+      and climate-related ocean processes.
+    </p>
 
-<h3>Technical Skills</h3>
-<ul>
-  <li>MATLAB, Python, Fortran, Shell scripting</li>
-  <li>ROMS, SWAN, WRF, CROCO, NEMO</li>
-  <li>Satellite data analysis (SWOT, SAR, scatterometer)</li>
-</ul>
+    <!-- CV Download -->
+    <p>
+      <a class="link" href="Academic_CV_Template.pdf" target="_blank">
+        Download full CV (PDF)
+      </a>
+    </p>
 
-<h3>Recognition</h3>
-<ul>
-  <li>Best Reviewer Award, Ocean Modelling (2016)</li>
-  <li>Editorial Board Member, Ocean Modelling</li>
-</ul>
-</main>
+    <!-- Education -->
+    <h2>Education</h2>
+    <ul>
+      <li>Ph.D. in Physical Oceanography</li>
+    </ul>
+
+    <!-- Technical Skills -->
+    <h2>Technical Skills</h2>
+    <ul>
+      <li><strong>Programming:</strong> MATLAB, IDL, Python, Fortran, shell scripting, HPC computing</li>
+      <li><strong>Model Development:</strong> SWAN, ROMS, WRF, CROCO (biogeochemical), NEMO</li>
+      <li><strong>Model Applications:</strong> CICE5, COAWST, WRF, CROCO, WAVEWATCH III</li>
+      <li><strong>Data Science & Machine Learning:</strong> Large-scale data analysis, CNN, autoencoders, U-Net</li>
+      <li><strong>Field Work:</strong> Seabird CTD, ADCP, Manta series</li>
+    </ul>
+
+    <!-- Recognition -->
+    <h2>Recognition</h2>
+    <ol>
+      <li>
+        Reviewer for major peer-reviewed journals, including
+        <em>Ocean Modelling</em>, <em>Journal of Physical Oceanography</em>,
+        <em>Journal of Geophysical Research: Oceans</em>,
+        <em>Continental Shelf Research</em>, <em>Ocean Dynamics</em>,
+        <em>Progress in Oceanography</em>, <em>Geophysical Research Letters</em>,
+        <em>Atmosphere</em>, <em>Atmosphere-Ocean</em>, and
+        <em>Deep-Sea Research Part I</em>.
+      </li>
+
+      <li>
+        Member of the Editorial Board of <em>Ocean Modelling</em> (2016–present).
+        Advising editors and reviewing manuscripts.
+      </li>
+
+      <li>
+        Best Reviewer Award, <em>Ocean Modelling</em> (2016).
+      </li>
+
+      <li>
+        Full Adjunct Professor, Nanjing University of Information Science and Technology (NUIST),
+        2015–2020. Supervised 3 Ph.D. students and 6 Master’s students.
+      </li>
+
+      <li>
+        Organizing Committee Member and Session Chair,
+        AGU Fall Meeting 2020, session on
+        “Atmosphere–Wave–Ocean Interaction Mechanisms.”
+      </li>
+
+      <li>
+        NSERC Visiting Fellowship in a Canadian Government Laboratory
+        (Bedford Institute of Oceanography), 2012–2015.
+      </li>
+
+      <li>
+        Principal Investigator of SWOT-related research project on data assimilation
+        and interpretation of SWOT measurements over Canadian seas.
+        <a class="link" href="https://www.dal.ca/news/2022/12/16/dalhousie-research-project-benefits-from-nasa-mission-to-gain-un.html" target="_blank">
+          Project news link
+        </a>
+      </li>
+
+      <li>
+        Chinese author of the renowned English textbook
+        <em>Introduction to Geophysical Fluid Dynamics: Physical and Numerical Aspects</em>
+        by Benoit Cushman-Roisin and Jean-Marie Becker
+        (China Ocean Press, 875 pages).
+        Recipient of the 2025 Outstanding Marine Science and Technology Books Award
+        from the Chinese Society for Oceanography.
+      </li>
+    </ol>
+
+  </div>
 
 </body>
 </html>
