@@ -1,108 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Guoqiang Liu</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<title>Guoqiang Liu</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                   Roboto, Helvetica, Arial, sans-serif;
-      background: #0b0b0b;
-      color: #f2f2f2;
-      line-height: 1.6;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  background: black;
+  color: white;
+}
 
-    .container {
-      max-width: 900px;
-      padding: 80px 40px;
-      margin: auto;
-    }
+/* ===== TOP NAV ===== */
+.topnav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  z-index: 1000;
+}
 
-    h1 {
-      font-size: 3rem;
-      font-weight: 600;
-      margin-bottom: 0.2em;
-    }
+.site-name {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 18px;
+}
 
-    h2 {
-      font-size: 1.3rem;
-      font-weight: 400;
-      color: #b8b8b8;
-      margin-top: 0;
-    }
+.nav-right a {
+  color: white;
+  text-decoration: none;
+  margin-left: 25px;
+}
 
-    .section {
-      margin-top: 50px;
-    }
+.nav-right a:hover {
+  text-decoration: underline;
+}
 
-    .section h3 {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .links a {
-      display: inline-block;
-      margin-right: 20px;
-      margin-top: 10px;
-      color: #7fd1ff;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .links a:hover {
-      text-decoration: underline;
-    }
-
-    footer {
-      margin-top: 80px;
-      font-size: 0.9rem;
-      color: #888;
-    }
-  </style>
+/* ===== CONTENT ===== */
+.container {
+  margin-top: 120px;
+  padding: 60px;
+}
+</style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>Guoqiang Liu</h1>
-    <h2>Research Scientist · Physical Oceanography</h2>
 
-    <div class="section">
-      <p>
-        I am a Research Scientist working on physical oceanography,
-        air–sea interaction, and ocean dynamics, with a particular
-        focus on wave–current interaction, turbulence, and remote sensing.
-      </p>
+<nav class="topnav">
+  <a href="index.html" class="site-name">Guoqiang Liu</a>
+  <div class="nav-right">
+    <a href="index.html">Home</a>
+    <a href="cv.html">CV</a>
+    <a href="publications.html">Publications</a>
+    <a href="research.html">Research</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
 
-      <p>
-        My research combines theoretical analysis, numerical modeling,
-        and observational data to study multiscale ocean processes
-        and their role in climate and marine environments.
-      </p>
-    </div>
-
-    <div class="section">
-      <h3>Research Interests</h3>
-      <ul>
-        <li>Wave turbulence and wave–current interaction</li>
-        <li>Upper-ocean dynamics and air–sea interaction</li>
-        <li>Remote sensing of the ocean</li>
-        <li>Numerical modeling and data analysis</li>
-      </ul>
-    </div>
-
-    <div class="section links">
-  <h3>Links</h3>
-  <a href="cv.html">Curriculum Vitae</a>
-  <a href="publications.html">Publications</a>
+<div class="container">
+  <h1>Guoqiang Liu</h1>
+  <p>Physical Oceanography · Wave–Current Interaction · Air–Sea Coupling</p>
 </div>
 
-    <footer>
-      © Guoqiang Liu
-    </footer>
-  </div>
 </body>
 </html>
