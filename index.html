@@ -1,129 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Guoqiang Liu</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      background: radial-gradient(
-        ellipse at center,
-        #0b3c5d 0%,
-        #031425 65%,
-        #00060d 100%
-      );
-      color: #ffffff;
-    }
-
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
-    }
-
-    .content {
-      position: relative;
-      z-index: 1;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      background: rgba(0, 25, 45, 0.12);
-      backdrop-filter: blur(2px);
-    }
-
-    h1 {
-      font-size: 3.4rem;
-      margin: 0;
-      letter-spacing: 0.1em;
-      text-shadow:
-        0 0 20px rgba(120,200,255,0.6),
-        0 0 40px rgba(80,160,255,0.3);
-    }
-
-    h2 {
-      font-weight: 300;
-      margin-top: 0.7rem;
-      color: #bfe9ff;
-      opacity: 0.95;
-    }
-
-    p {
-      max-width: 640px;
-      margin-top: 1.8rem;
-      line-height: 1.75;
-      font-size: 1.05rem;
-      color: #e6f6ff;
-      opacity: 0.95;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Guoqiang Liu</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: black;
+  }
+  canvas {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+  }
+  .content {
+    position: relative;
+    color: white;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont;
+    padding: 60px;
+  }
+</style>
 </head>
 
 <body>
+<canvas id="bg"></canvas>
 
-  <canvas id="wave"></canvas>
+<div class="content">
+  <h1>Guoqiang Liu</h1>
+  <p>Wave turbulence background</p>
+</div>
 
-  <div class="content">
-    <h1>Guoqiang Liu</h1>
-    <h2>Wave Turbulence · Ocean Dynamics</h2>
-    <p>
-      Personal academic homepage powered by GitHub Pages.<br>
-      Research interests include wave turbulence,
-      nonlinear ocean processes, and multiscale dynamics.
-    </p>
-  </div>
+<script>
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
 
-  <script>
-    const canvas = document.getElementById("wave");
-    const ctx = canvas.getContext("2d");
+let w, h;
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
 
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resize);
-    resize();
+const img = new Image();
+img.src = "turbulence.png";
 
-    let t = 0;
+let t = 0;
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+img.onload = () => {
+  requestAnimationFrame(draw);
+};
 
-      for (let y = 0; y < canvas.height; y += 14) {
-        ctx.beginPath();
-        for (let x = 0; x < canvas.width; x += 14) {
+function draw() {
+  ctx.clearRect(0, 0, w, h);
 
-          const noise =
-            Math.sin(x * 0.013 + t) *
-            Math.cos(y * 0.015 + t * 0.8) +
-            Math.sin((x + y) * 0.006 + t * 0.4);
+  const scale = Math.max(w / img.width, h / img.height);
+  const iw = img.width * scale;
+  const ih = img.height * scale;
+  const ox = (w - iw) / 2;
+  const oy = (h - ih) / 2;
 
-          const yy = y + noise * 38;
-          ctx.lineTo(x, yy);
-        }
+  for (let y = 0; y < h; y += 2) {
+    const offset =
+      Math.sin(y * 0.015 + t) * 12 +
+      Math.sin(y * 0.04 + t * 1.7) * 6;
 
-        ctx.strokeStyle = "rgba(130,210,255,0.38)";
-        ctx.lineWidth = 1.2;
-        ctx.shadowColor = "rgba(120,200,255,0.65)";
-        ctx.shadowBlur = 14;
-        ctx.stroke();
-      }
+    ctx.drawImage(
+      img,
+      0,
+      y / scale,
+      img.width,
+      2 / scale,
+      ox + offset,
+      y,
+      iw,
+      2
+    );
+  }
 
-      t += 0.012;
-      requestAnimationFrame(draw);
-    }
-
-    draw();
-  </script>
-
+  t += 0.02;
+  requestAnimationFrame(draw);
+}
+</script>
 </body>
 </html>
