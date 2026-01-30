@@ -18,7 +18,7 @@ canvas {
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.55;   /* ⭐ 背景清晰但不压文字 */
+  opacity: 0.6;   /* 背景清楚但不压文字 */
 }
 
 /* ===== 顶部导航 ===== */
@@ -47,12 +47,12 @@ canvas {
   text-decoration: underline;
 }
 
-/* ===== 页面内容 ===== */
+/* ===== 页面主体 ===== */
 main {
   position: relative;
   z-index: 1;
   max-width: 900px;
-  margin: 140px auto 220px auto;
+  margin: 140px auto 200px auto;
   padding: 40px;
   background: rgba(255,255,255,0.9);
   box-shadow: 0 0 25px rgba(0,0,0,0.2);
@@ -83,12 +83,8 @@ h1 {
     upper-ocean dynamics, air–sea coupling, and satellite remote sensing.
   </p>
   <p>
-    My work combines numerical modeling, theory, and observations to understand
-    ocean surface and mixed-layer processes.
-  </p>
-
-  <p style="margin-top:600px; color:#555;">
-    (Scroll to inject energy into the wave field.)
+    My work combines numerical modeling, theory, and observations
+    to understand ocean surface and mixed-layer processes.
   </p>
 </main>
 
@@ -104,67 +100,37 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
-/* ===== 加载背景图片 ===== */
+/* ===== 加载背景图 ===== */
 const img = new Image();
 img.src = "wave.jpg";
 
-/* ===== 时间 & 能量 ===== */
 let t = 0;
-let scrollEnergy = 0;
-let lastScrollY = window.scrollY;
-
-/* ===== 滚动 → 能量输入 ===== */
-window.addEventListener("scroll", () => {
-  const currentY = window.scrollY;
-  const delta = Math.abs(currentY - lastScrollY);
-
-  scrollEnergy += delta * 0.002;
-  scrollEnergy = Math.min(scrollEnergy, 2.8);
-
-  lastScrollY = currentY;
-});
 
 img.onload = () => requestAnimationFrame(draw);
 
 function draw() {
   ctx.clearRect(0, 0, w, h);
 
-  /* 能量耗散（物理感） */
-  scrollEnergy *= 0.96;
-
+  /* 保证整张图铺满 */
   const scale = Math.max(w / img.width, h / img.height);
   const iw = img.width * scale;
   const ih = img.height * scale;
   const ox = (w - iw) / 2;
   const oy = (h - ih) / 2;
 
-  const baseAmp = 30;                  // ⭐ 基础浪幅（清楚可见）
-  const amp = baseAmp * (1 + scrollEnergy);
+  /* 连续位移（不会断层） */
+  const dx = Math.sin(t) * 30;
+  const dy = Math.cos(t * 0.6) * 20;
 
-  /* 深海涌浪扫描线位移 */
-  for (let y = 0; y < h; y += 2) {
-    const offset =
-      Math.sin(y * 0.006 + t) * amp +
-      Math.sin(y * 0.012 + t * 0.6) * amp * 0.35;
+  ctx.drawImage(img, ox + dx, oy + dy, iw, ih);
 
-    ctx.drawImage(
-      img,
-      0,
-      y / scale,
-      img.width,
-      2 / scale,
-      ox + offset,
-      y,
-      iw,
-      2
-    );
-  }
-
-  /* 轻雾化，让画面不刺眼 */
-  ctx.fillStyle = "rgba(255,255,255,0.12)";
+  /* 柔和波纹扰动 */
+  ctx.globalCompositeOperation = "overlay";
+  ctx.fillStyle = "rgba(255,255,255,0.08)";
   ctx.fillRect(0, 0, w, h);
+  ctx.globalCompositeOperation = "source-over";
 
-  t += 0.006;
+  t += 0.004;
   requestAnimationFrame(draw);
 }
 </script>
