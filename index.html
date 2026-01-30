@@ -8,16 +8,19 @@
 html, body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  background: black;
+  height: 100%;
+  font-family: "Times New Roman", Times, serif;
 }
 
+/* ===== 动态背景 ===== */
 canvas {
   position: fixed;
   inset: 0;
   z-index: -1;
+  opacity: 0.3;   /* 半透明，学术风格 */
 }
 
+/* ===== 顶部导航 ===== */
 .topnav {
   position: fixed;
   top: 0;
@@ -39,13 +42,23 @@ canvas {
   font-size: 16px;
 }
 
+.topnav a:hover {
+  text-decoration: underline;
+}
+
+/* ===== 页面内容 ===== */
 main {
   position: relative;
-  z-index: 5;
+  z-index: 1;
   max-width: 900px;
-  margin: 120px auto;
-  color: white;
-  font-family: "Times New Roman", serif;
+  margin: 140px auto 200px auto;
+  padding: 40px;
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 0 25px rgba(0,0,0,0.15);
+}
+
+h1 {
+  margin-top: 0;
 }
 </style>
 </head>
@@ -65,7 +78,15 @@ main {
 <main>
   <h1>Guoqiang Liu</h1>
   <p>
-    Physical oceanography · wave–current interaction · upper-ocean dynamics
+    I am a physical oceanographer with research interests in wave–current interaction,
+    upper-ocean dynamics, air–sea coupling, and satellite remote sensing.
+  </p>
+  <p>
+    My work combines numerical modeling, theory, and observations to understand
+    ocean surface and mixed-layer processes.
+  </p>
+  <p style="margin-top:600px;">
+    (Scroll to see wave energy increase.)
   </p>
 </main>
 
@@ -81,17 +102,33 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
+/* ===== 加载背景图片 ===== */
 const img = new Image();
-img.src = "wave.jpg";   // ⭐ 文件名必须完全一致
+img.src = "wave.jpg";
 
+/* ===== 时间 & 能量 ===== */
 let t = 0;
+let scrollEnergy = 0;
+let lastScrollY = window.scrollY;
 
-img.onload = () => {
-  requestAnimationFrame(draw);
-};
+/* ===== 滚动 → 能量注入 ===== */
+window.addEventListener("scroll", () => {
+  const currentY = window.scrollY;
+  const delta = Math.abs(currentY - lastScrollY);
+
+  scrollEnergy += delta * 0.002;     // 能量输入
+  scrollEnergy = Math.min(scrollEnergy, 2.5);
+
+  lastScrollY = currentY;
+});
+
+img.onload = () => requestAnimationFrame(draw);
 
 function draw() {
   ctx.clearRect(0, 0, w, h);
+
+  /* 能量耗散 */
+  scrollEnergy *= 0.96;
 
   const scale = Math.max(w / img.width, h / img.height);
   const iw = img.width * scale;
@@ -99,10 +136,14 @@ function draw() {
   const ox = (w - iw) / 2;
   const oy = (h - ih) / 2;
 
+  const baseAmp = 20;
+  const amp = baseAmp * (1 + scrollEnergy);
+
+  /* 扫描线位移：深海涌浪 */
   for (let y = 0; y < h; y += 2) {
-    const swell =
-      Math.sin(y * 0.006 + t) * 22 +
-      Math.sin(y * 0.012 + t * 0.6) * 6;
+    const offset =
+      Math.sin(y * 0.006 + t) * amp +
+      Math.sin(y * 0.012 + t * 0.6) * amp * 0.3;
 
     ctx.drawImage(
       img,
@@ -110,12 +151,16 @@ function draw() {
       y / scale,
       img.width,
       2 / scale,
-      ox + swell,
+      ox + offset,
       y,
       iw,
       2
     );
   }
+
+  /* 白色雾化层，让背景更浅 */
+  ctx.fillStyle = "rgba(255,255,255,0.25)";
+  ctx.fillRect(0, 0, w, h);
 
   t += 0.006;
   requestAnimationFrame(draw);
