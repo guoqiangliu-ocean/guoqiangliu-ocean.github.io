@@ -9,7 +9,9 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  height: 100%;
   font-family: "Times New Roman", Times, serif;
+  background: black;
 }
 
 /* Canvas 背景 */
@@ -26,7 +28,7 @@ canvas {
   left: 0;
   width: 100%;
   height: 55px;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.75);
   display: flex;
   align-items: center;
   padding: 0 50px;
@@ -41,35 +43,16 @@ canvas {
   font-size: 16px;
 }
 
-.topnav a:hover {
-  text-decoration: underline;
-}
-
-/* 内容区域 */
 main {
-  position: relative;
   max-width: 900px;
-  margin: 140px auto;
+  margin: 120px auto;
   padding: 40px;
-  background: rgba(255,255,255,0.85);
-}
-
-h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
-
-hr {
-  border: none;
-  border-top: 2px solid #000;
-  margin: 10px 0 20px 0;
+  background: rgba(255,255,255,0.88);
 }
 </style>
 </head>
 
 <body>
-
-<canvas id="bg"></canvas>
 
 <nav class="topnav">
   <a href="index.html">Home</a>
@@ -79,19 +62,13 @@ hr {
   <a href="contact.html">Contact</a>
 </nav>
 
+<canvas id="bg"></canvas>
+
 <main>
 <h1>Guoqiang Liu</h1>
-<hr>
-
 <p>
-I am a physical oceanographer with research interests in wave–current interaction,
-upper-ocean dynamics under extreme weather, air–sea coupling,
-and satellite remote sensing (e.g., SWOT).
-</p>
-
-<p>
-My work combines numerical modeling, theory, and observations
-to understand ocean surface and mixed-layer processes.
+Physical oceanographer focusing on wave–current interaction,
+upper-ocean dynamics, and air–sea coupling.
 </p>
 </main>
 
@@ -107,8 +84,9 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
+/* 加载你的涌浪照片 */
 const img = new Image();
-img.src = "turbulence.png";
+img.src = "wave.jpg";
 
 let t = 0;
 
@@ -123,10 +101,12 @@ function draw() {
   const ox = (w - iw) / 2;
   const oy = (h - ih) / 2;
 
+  /* 扫描线位移：模拟波浪传播 */
   for (let y = 0; y < h; y += 2) {
-    const offset =
-      Math.sin(y * 0.015 + t) * 12 +
-      Math.sin(y * 0.04 + t * 1.7) * 6;
+
+    const phase =
+      Math.sin(y * 0.015 + t) * 14 +      // 主波
+      Math.sin(y * 0.045 + t * 1.6) * 6;  // 次级扰动
 
     ctx.drawImage(
       img,
@@ -134,14 +114,14 @@ function draw() {
       y / scale,
       img.width,
       2 / scale,
-      ox + offset,
+      ox + phase,
       y,
       iw,
       2
     );
   }
 
-  t += 0.02;
+  t += 0.015; // 波速（越小越“深海”）
   requestAnimationFrame(draw);
 }
 </script>
