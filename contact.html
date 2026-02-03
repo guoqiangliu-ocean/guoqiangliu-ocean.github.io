@@ -2,60 +2,199 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Contact | Guoqiang Liu</title>
+<title>Guoqiang Liu - Physical Oceanographer</title>
 
 <style>
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  height: 100%;
   font-family: "Times New Roman", Times, serif;
-  background: #ffffff;
-  color: #000000;
-  line-height: 1.6;
 }
 
-.topnav {
+/* 湍流场画布 */
+#turbulence-canvas {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
+  height: 100%;
+  z-index: -2;
+}
+
+/* 暗化滤镜，保证文字可读 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: -1;
+}
+
+/* 顶部导航 */
+.topnav {
+  position: fixed;
+  top: 0;
+  width: 100%;
   height: 55px;
-  background: #000;
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   padding: 0 50px;
   box-sizing: border-box;
+  z-index: 10;
+  backdrop-filter: blur(5px);
+  border-bottom: 1px solid rgba(0, 255, 230, 0.1);
 }
 
 .topnav a {
-  color: white;
+  color: #e0f7ff;
   text-decoration: none;
   margin-right: 30px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  position: relative;
+  padding: 5px 0;
 }
 
 .topnav a:hover {
-  text-decoration: underline;
+  color: #00FFE6;
+}
+
+.topnav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #00FFE6;
+  transition: width 0.3s ease;
+}
+
+.topnav a:hover::after {
+  width: 100%;
 }
 
 main {
-  max-width: 1000px;
-  margin: 120px auto 80px auto;
-  padding: 0 40px;
+  max-width: 900px;
+  margin: 140px auto 160px;
+  padding: 50px 60px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 255, 230, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00FFE6, #8A2BE2);
 }
 
 h1 {
-  font-size: 28px;
+  color: #0A1A2F;
+  font-size: 2.8rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
-hr {
-  border: none;
-  border-top: 2px solid #000;
-  margin: 10px 0 20px 0;
+p {
+  color: #333;
+  font-size: 1.2rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .topnav {
+    padding: 0 20px;
+    height: 50px;
+  }
+  
+  .topnav a {
+    margin-right: 20px;
+    font-size: 0.9rem;
+  }
+  
+  main {
+    margin: 120px 20px 100px;
+    padding: 30px;
+  }
+  
+  h1 {
+    font-size: 2.2rem;
+  }
+  
+  p {
+    font-size: 1.1rem;
+  }
+}
+
+/* 加载动画 */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0A1A2F;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.5s ease;
+}
+
+.loading-content {
+  text-align: center;
+  color: #00FFE6;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(0, 255, 230, 0.3);
+  border-top-color: #00FFE6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1.2rem;
+  letter-spacing: 1px;
 }
 </style>
 </head>
 
 <body>
+<!-- 加载动画 -->
+<div class="loading" id="loading">
+  <div class="loading-content">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">INITIALIZING TURBULENCE MODEL</div>
+  </div>
+</div>
 
+<!-- 湍流场画布 -->
+<canvas id="turbulence-canvas"></canvas>
+
+<!-- 暗化滤镜 -->
+<div class="overlay"></div>
+
+<!-- 顶部导航 -->
 <nav class="topnav">
   <a href="index.html">Home</a>
   <a href="cv.html">CV</a>
@@ -64,13 +203,557 @@ hr {
   <a href="contact.html">Contact</a>
 </nav>
 
+<!-- 主要内容 -->
 <main>
-<h1>Contact</h1>
-<hr>
-
-<p>Email: yourname@institution.edu</p>
-<p>Google Scholar | ORCID | ResearchGate</p>
+  <h1>Guoqiang Liu</h1>
+  <p>
+    
+  </p>
+  <p>
+   
+  </p>
+  <p>
+    
+  </p>
 </main>
+
+<script>
+// 等待页面完全加载
+window.addEventListener('load', function() {
+  // 隐藏加载动画
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('loading').style.display = 'none';
+    }, 500);
+  }, 1000);
+});
+
+// ==================== 湍流场动态背景系统 ====================
+
+// 获取Canvas元素和上下文
+const canvas = document.getElementById('turbulence-canvas');
+const ctx = canvas.getContext('2d');
+
+// 设置Canvas尺寸
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+// 湍流场参数
+let field = [];
+let velocityField = [];
+let pressureField = [];
+let dyeField = [];
+const gridSize = 25; // 网格大小，控制精度
+let gridX, gridY;
+let time = 0;
+
+// 物理参数
+const viscosity = 0.001; // 粘度
+const diffusion = 0.0005; // 扩散系数
+const dt = 0.05; // 时间步长
+
+// 初始化湍流场
+function initTurbulenceField() {
+  gridX = Math.ceil(canvas.width / gridSize) + 2;
+  gridY = Math.ceil(canvas.height / gridSize) + 2;
+  
+  // 初始化场
+  field = new Array(gridX);
+  velocityField = new Array(gridX);
+  pressureField = new Array(gridX);
+  dyeField = new Array(gridX);
+  
+  for (let i = 0; i < gridX; i++) {
+    field[i] = new Array(gridY);
+    velocityField[i] = new Array(gridY);
+    pressureField[i] = new Array(gridY);
+    dyeField[i] = new Array(gridY);
+    
+    for (let j = 0; j < gridY; j++) {
+      field[i][j] = {x: 0, y: 0};
+      velocityField[i][j] = {x: 0, y: 0};
+      pressureField[i][j] = 0;
+      
+      // 初始化染料场 - 创建一些初始图案
+      const distToCenter = Math.sqrt(
+        Math.pow(i - gridX/2, 2) + Math.pow(j - gridY/2, 2)
+      );
+      dyeField[i][j] = {
+        r: Math.sin(distToCenter * 0.1) * 0.5 + 0.5,
+        g: Math.cos(distToCenter * 0.15 + 1) * 0.5 + 0.5,
+        b: Math.sin(distToCenter * 0.12 + 2) * 0.5 + 0.5
+      };
+    }
+  }
+  
+  // 创建初始湍流
+  createInitialTurbulence();
+}
+
+// 创建初始湍流
+function createInitialTurbulence() {
+  // 创建多个涡旋
+  const vortices = [
+    {x: gridX * 0.3, y: gridY * 0.3, strength: 5},
+    {x: gridX * 0.7, y: gridY * 0.3, strength: -4},
+    {x: gridX * 0.5, y: gridY * 0.7, strength: 3},
+    {x: gridX * 0.8, y: gridY * 0.8, strength: -6},
+  ];
+  
+  for (let i = 0; i < gridX; i++) {
+    for (let j = 0; j < gridY; j++) {
+      // 合成所有涡旋的影响
+      let vx = 0, vy = 0;
+      
+      vortices.forEach(vortex => {
+        const dx = i - vortex.x;
+        const dy = j - vortex.y;
+        const dist = Math.sqrt(dx*dx + dy*dy) + 0.1;
+        const influence = vortex.strength / dist;
+        
+        // 涡旋速度场
+        vx += -dy * influence;
+        vy += dx * influence;
+      });
+      
+      // 添加一些随机扰动
+      vx += (Math.random() - 0.5) * 0.2;
+      vy += (Math.random() - 0.5) * 0.2;
+      
+      field[i][j] = {x: vx, y: vy};
+      velocityField[i][j] = {x: vx, y: vy};
+    }
+  }
+}
+
+// 施加边界条件
+function applyBoundaryConditions() {
+  // 无滑移边界条件
+  for (let i = 0; i < gridX; i++) {
+    field[i][0] = {x: 0, y: 0};
+    field[i][gridY-1] = {x: 0, y: 0};
+  }
+  
+  for (let j = 0; j < gridY; j++) {
+    field[0][j] = {x: 0, y: 0};
+    field[gridX-1][j] = {x: 0, y: 0};
+  }
+}
+
+// 平流步骤
+function advect() {
+  const newField = new Array(gridX);
+  
+  for (let i = 0; i < gridX; i++) {
+    newField[i] = new Array(gridY);
+    for (let j = 0; j < gridY; j++) {
+      // 半拉格朗日平流
+      const u = field[i][j].x;
+      const v = field[i][j].y;
+      
+      // 回溯位置
+      const srcX = i - u * dt;
+      const srcY = j - v * dt;
+      
+      // 双线性插值
+      const x1 = Math.floor(srcX);
+      const x2 = x1 + 1;
+      const y1 = Math.floor(srcY);
+      const y2 = y1 + 1;
+      
+      // 边界检查
+      const safeX1 = Math.max(0, Math.min(gridX-1, x1));
+      const safeX2 = Math.max(0, Math.min(gridX-1, x2));
+      const safeY1 = Math.max(0, Math.min(gridY-1, y1));
+      const safeY2 = Math.max(0, Math.min(gridY-1, y2));
+      
+      const tx = srcX - x1;
+      const ty = srcY - y1;
+      
+      // 插值速度
+      const v00 = field[safeX1][safeY1];
+      const v10 = field[safeX2][safeY1];
+      const v01 = field[safeX1][safeY2];
+      const v11 = field[safeX2][safeY2];
+      
+      const vx = (1-tx)*(1-ty)*v00.x + tx*(1-ty)*v10.x + (1-tx)*ty*v01.x + tx*ty*v11.x;
+      const vy = (1-tx)*(1-ty)*v00.y + tx*(1-ty)*v10.y + (1-tx)*ty*v01.y + tx*ty*v11.y;
+      
+      newField[i][j] = {x: vx, y: vy};
+    }
+  }
+  
+  // 更新场
+  for (let i = 0; i < gridX; i++) {
+    for (let j = 0; j < gridY; j++) {
+      field[i][j] = newField[i][j];
+    }
+  }
+}
+
+// 扩散步骤
+function diffuse() {
+  const a = dt * viscosity * gridSize * gridSize;
+  
+  for (let iter = 0; iter < 10; iter++) {
+    for (let i = 1; i < gridX-1; i++) {
+      for (let j = 1; j < gridY-1; j++) {
+        const sumX = field[i-1][j].x + field[i+1][j].x + field[i][j-1].x + field[i][j+1].x;
+        const sumY = field[i-1][j].y + field[i+1][j].y + field[i][j-1].y + field[i][j+1].y;
+        
+        field[i][j].x = (field[i][j].x + a * sumX) / (1 + 4 * a);
+        field[i][j].y = (field[i][j].y + a * sumY) / (1 + 4 * a);
+      }
+    }
+    applyBoundaryConditions();
+  }
+}
+
+// 投影步骤（确保无散度）
+function project() {
+  // 计算散度
+  const div = new Array(gridX);
+  const p = new Array(gridX);
+  
+  for (let i = 0; i < gridX; i++) {
+    div[i] = new Array(gridY);
+    p[i] = new Array(gridY);
+    for (let j = 0; j < gridY; j++) {
+      div[i][j] = 0;
+      p[i][j] = 0;
+    }
+  }
+  
+  const h = 1.0 / gridSize;
+  
+  for (let i = 1; i < gridX-1; i++) {
+    for (let j = 1; j < gridY-1; j++) {
+      div[i][j] = -0.5 * h * (
+        field[i+1][j].x - field[i-1][j].x +
+        field[i][j+1].y - field[i][j-1].y
+      );
+    }
+  }
+  
+  applyBoundaryConditions();
+  
+  // 求解泊松方程
+  for (let iter = 0; iter < 20; iter++) {
+    for (let i = 1; i < gridX-1; i++) {
+      for (let j = 1; j < gridY-1; j++) {
+        p[i][j] = (div[i][j] + 
+                   p[i-1][j] + p[i+1][j] + 
+                   p[i][j-1] + p[i][j+1]) / 4;
+      }
+    }
+  }
+  
+  // 减去压力梯度
+  for (let i = 1; i < gridX-1; i++) {
+    for (let j = 1; j < gridY-1; j++) {
+      field[i][j].x -= 0.5 * (p[i+1][j] - p[i-1][j]) / h;
+      field[i][j].y -= 0.5 * (p[i][j+1] - p[i][j-1]) / h;
+    }
+  }
+  
+  applyBoundaryConditions();
+}
+
+// 更新染料场
+function updateDye() {
+  const newDyeField = new Array(gridX);
+  
+  for (let i = 0; i < gridX; i++) {
+    newDyeField[i] = new Array(gridY);
+    for (let j = 0; j < gridY; j++) {
+      const u = field[i][j].x;
+      const v = field[i][j].y;
+      
+      // 回溯位置
+      const srcX = i - u * dt * 2;
+      const srcY = j - v * dt * 2;
+      
+      // 双线性插值
+      const x1 = Math.floor(srcX);
+      const x2 = x1 + 1;
+      const y1 = Math.floor(srcY);
+      const y2 = y1 + 1;
+      
+      // 边界检查
+      const safeX1 = Math.max(0, Math.min(gridX-1, x1));
+      const safeX2 = Math.max(0, Math.min(gridX-1, x2));
+      const safeY1 = Math.max(0, Math.min(gridY-1, y1));
+      const safeY2 = Math.max(0, Math.min(gridY-1, y2));
+      
+      const tx = srcX - x1;
+      const ty = srcY - y1;
+      
+      // 插值染料
+      const d00 = dyeField[safeX1][safeY1];
+      const d10 = dyeField[safeX2][safeY1];
+      const d01 = dyeField[safeX1][safeY2];
+      const d11 = dyeField[safeX2][safeY2];
+      
+      const r = (1-tx)*(1-ty)*d00.r + tx*(1-ty)*d10.r + (1-tx)*ty*d01.r + tx*ty*d11.r;
+      const g = (1-tx)*(1-ty)*d00.g + tx*(1-ty)*d10.g + (1-tx)*ty*d01.g + tx*ty*d11.g;
+      const b = (1-tx)*(1-ty)*d00.b + tx*(1-ty)*d10.b + (1-tx)*ty*d01.b + tx*ty*d11.b;
+      
+      newDyeField[i][j] = {r, g, b};
+    }
+  }
+  
+  // 添加一些扩散
+  for (let i = 1; i < gridX-1; i++) {
+    for (let j = 1; j < gridY-1; j++) {
+      const neighborSumR = 
+        dyeField[i-1][j].r + dyeField[i+1][j].r + 
+        dyeField[i][j-1].r + dyeField[i][j+1].r;
+      const neighborSumG = 
+        dyeField[i-1][j].g + dyeField[i+1][j].g + 
+        dyeField[i][j-1].g + dyeField[i][j+1].g;
+      const neighborSumB = 
+        dyeField[i-1][j].b + dyeField[i+1][j].b + 
+        dyeField[i][j-1].b + dyeField[i][j+1].b;
+      
+      newDyeField[i][j].r = 0.95 * newDyeField[i][j].r + 0.05 * neighborSumR / 4;
+      newDyeField[i][j].g = 0.95 * newDyeField[i][j].g + 0.05 * neighborSumG / 4;
+      newDyeField[i][j].b = 0.95 * newDyeField[i][j].b + 0.05 * neighborSumB / 4;
+    }
+  }
+  
+  // 更新染料场
+  for (let i = 0; i < gridX; i++) {
+    for (let j = 0; j < gridY; j++) {
+      dyeField[i][j] = newDyeField[i][j];
+    }
+  }
+}
+
+// 添加外部力
+function addForces() {
+  time += dt;
+  
+  // 周期性添加力，模拟湍流持续发展
+  const forceFrequency = 0.5;
+  const forceAmplitude = 2.0;
+  
+  // 在中心区域添加旋转力
+  const centerX = gridX * 0.5 + Math.sin(time * 0.3) * gridX * 0.1;
+  const centerY = gridY * 0.5 + Math.cos(time * 0.2) * gridY * 0.1;
+  
+  for (let i = 1; i < gridX-1; i++) {
+    for (let j = 1; j < gridY-1; j++) {
+      const dx = i - centerX;
+      const dy = j - centerY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      
+      if (dist < 10) {
+        // 添加旋转力
+        const strength = forceAmplitude * Math.sin(time * forceFrequency);
+        field[i][j].x += -dy * strength * 0.01;
+        field[i][j].y += dx * strength * 0.01;
+      }
+    }
+  }
+  
+  // 在边界添加一些随机扰动
+  if (Math.random() < 0.02) {
+    const side = Math.floor(Math.random() * 4);
+    let x, y;
+    
+    switch(side) {
+      case 0: // 上边界
+        x = Math.floor(Math.random() * gridX);
+        y = 1;
+        break;
+      case 1: // 下边界
+        x = Math.floor(Math.random() * gridX);
+        y = gridY - 2;
+        break;
+      case 2: // 左边界
+        x = 1;
+        y = Math.floor(Math.random() * gridY);
+        break;
+      case 3: // 右边界
+        x = gridX - 2;
+        y = Math.floor(Math.random() * gridY);
+        break;
+    }
+    
+    const forceStrength = (Math.random() - 0.5) * 3;
+    const angle = Math.random() * Math.PI * 2;
+    
+    field[x][y].x += Math.cos(angle) * forceStrength;
+    field[x][y].y += Math.sin(angle) * forceStrength;
+  }
+}
+
+// 绘制湍流场
+function drawTurbulence() {
+  // 绘制深色背景
+  ctx.fillStyle = '#0A1A2F';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // 绘制流线
+  const lineLength = gridSize * 1.5;
+  
+  for (let i = 1; i < gridX-1; i += 2) {
+    for (let j = 1; j < gridY-1; j += 2) {
+      const x = i * gridSize;
+      const y = j * gridSize;
+      const vx = field[i][j].x;
+      const vy = field[i][j].y;
+      const speed = Math.sqrt(vx*vx + vy*vy);
+      
+      // 根据速度大小确定颜色
+      const normalizedSpeed = Math.min(speed * 20, 1);
+      const hue = 200 + normalizedSpeed * 40; // 蓝色到青色
+      const saturation = 70 + normalizedSpeed * 30;
+      const lightness = 30 + normalizedSpeed * 20;
+      
+      // 根据染料场调整颜色
+      const dye = dyeField[i][j];
+      const finalHue = hue * 0.7 + 240 * dye.r * 0.3;
+      
+      // 绘制流线
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + vx * lineLength, y + vy * lineLength);
+      
+      // 根据速度和染料设置线宽和颜色
+      const lineWidth = 0.5 + normalizedSpeed * 2;
+      ctx.lineWidth = lineWidth;
+      
+      // 创建渐变颜色
+      const gradient = ctx.createLinearGradient(
+        x, y,
+        x + vx * lineLength, y + vy * lineLength
+      );
+      
+      gradient.addColorStop(0, `hsla(${finalHue}, ${saturation}%, ${lightness}%, 0.8)`);
+      gradient.addColorStop(1, `hsla(${finalHue}, ${saturation}%, ${lightness}%, 0.1)`);
+      
+      ctx.strokeStyle = gradient;
+      ctx.stroke();
+      
+      // 在速度大的地方绘制小箭头
+      if (speed > 0.5) {
+        const angle = Math.atan2(vy, vx);
+        const arrowSize = 3 + normalizedSpeed * 4;
+        
+        ctx.beginPath();
+        ctx.moveTo(x + vx * lineLength, y + vy * lineLength);
+        ctx.lineTo(
+          x + vx * lineLength - arrowSize * Math.cos(angle - Math.PI/6),
+          y + vy * lineLength - arrowSize * Math.sin(angle - Math.PI/6)
+        );
+        ctx.lineTo(
+          x + vx * lineLength - arrowSize * Math.cos(angle + Math.PI/6),
+          y + vy * lineLength - arrowSize * Math.sin(angle + Math.PI/6)
+        );
+        ctx.closePath();
+        
+        ctx.fillStyle = `hsla(${finalHue}, ${saturation}%, ${lightness}%, 0.9)`;
+        ctx.fill();
+      }
+    }
+  }
+  
+  // 绘制涡量等高线（湍流核心区域）
+  for (let i = 2; i < gridX-2; i += 4) {
+    for (let j = 2; j < gridY-2; j += 4) {
+      // 计算涡量
+      const vorticity = 
+        (field[i+1][j].y - field[i-1][j].y) - 
+        (field[i][j+1].x - field[i][j-1].x);
+      
+      if (Math.abs(vorticity) > 0.3) {
+        const x = i * gridSize;
+        const y = j * gridSize;
+        const radius = Math.abs(vorticity) * 3 + 1;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        
+        // 根据涡量方向选择颜色
+        const color = vorticity > 0 ? 
+          `rgba(0, 255, 230, ${Math.min(Math.abs(vorticity) * 0.3, 0.5)})` :
+          `rgba(138, 43, 226, ${Math.min(Math.abs(vorticity) * 0.3, 0.5)})`;
+        
+        ctx.fillStyle = color;
+        ctx.fill();
+      }
+    }
+  }
+}
+
+// 湍流模拟主循环
+function simulateTurbulence() {
+  // 添加外力
+  addForces();
+  
+  // 湍流模拟步骤
+  advect();
+  diffuse();
+  project();
+  
+  // 更新染料
+  updateDye();
+  
+  // 绘制
+  drawTurbulence();
+  
+  // 继续动画
+  requestAnimationFrame(simulateTurbulence);
+}
+
+// 窗口大小调整处理
+window.addEventListener('resize', () => {
+  resizeCanvas();
+  initTurbulenceField();
+});
+
+// 鼠标交互
+let mouseX = null;
+let mouseY = null;
+
+canvas.addEventListener('mousemove', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  mouseX = (e.clientX - rect.left) / gridSize;
+  mouseY = (e.clientY - rect.top) / gridSize;
+  
+  // 在鼠标位置添加力
+  if (mouseX >= 1 && mouseX < gridX-1 && mouseY >= 1 && mouseY < gridY-1) {
+    const i = Math.floor(mouseX);
+    const j = Math.floor(mouseY);
+    
+    // 添加轻微扰动
+    const force = 3.0;
+    field[i][j].x += (Math.random() - 0.5) * force;
+    field[i][j].y += (Math.random() - 0.5) * force;
+    
+    // 在鼠标位置添加染料
+    dyeField[i][j] = {
+      r: Math.random() * 0.5 + 0.5,
+      g: Math.random() * 0.5 + 0.5,
+      b: Math.random() * 0.5 + 0.5
+    };
+  }
+});
+
+canvas.addEventListener('mouseleave', () => {
+  mouseX = null;
+  mouseY = null;
+});
+
+// 初始化
+resizeCanvas();
+initTurbulenceField();
+simulateTurbulence();
+</script>
 
 </body>
 </html>
