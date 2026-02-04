@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Guoqiang Liu - Physical Oceanographer</title>
 
 <style>
@@ -10,9 +11,10 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100%;
   font-family: "Playfair Display", "Times New Roman", serif;
   overflow-x: hidden;
+  background-color: #0A1A2F; /* Fallback color */
 }
 
 /* 神奈川冲浪里背景 */
@@ -34,7 +36,7 @@ html, body {
   100% { transform: scale(1.1); }
 }
 
-/* 动态波浪覆盖层 */
+/* 动态波浪覆盖层 - 加深一点以突出文字 */
 .wave-overlay {
   position: fixed;
   top: 0;
@@ -44,9 +46,9 @@ html, body {
   z-index: -1;
   background: linear-gradient(
     180deg,
-    rgba(10, 26, 47, 0.3) 0%,
-    rgba(10, 26, 47, 0.5) 50%,
-    rgba(10, 26, 47, 0.7) 100%
+    rgba(10, 26, 47, 0.4) 0%,
+    rgba(10, 26, 47, 0.7) 50%,
+    rgba(10, 26, 47, 0.9) 100%
   );
 }
 
@@ -55,12 +57,12 @@ html, body {
   position: fixed;
   top: 0;
   width: 100%;
-  height: 55px;
+  height: 60px;
   background: rgba(10, 26, 47, 0.85);
   display: flex;
   align-items: center;
-  padding: 0 50px;
-  box-sizing: border-box;
+  justify-content: center; /* 居中导航 */
+  padding: 0 20px;
   z-index: 100;
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -69,12 +71,12 @@ html, body {
 .topnav a {
   color: #e0f7ff;
   text-decoration: none;
-  margin-right: 30px;
+  margin: 0 25px;
   font-weight: 500;
   transition: all 0.3s ease;
   position: relative;
-  padding: 5px 0;
   font-size: 1rem;
+  letter-spacing: 1px;
 }
 
 .topnav a:hover {
@@ -84,11 +86,12 @@ html, body {
 .topnav a::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #1a5f7a, #FFD700);
+  background: #FFD700;
   transition: width 0.3s ease;
 }
 
@@ -103,114 +106,123 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 100px 20px 50px;
+  padding: 120px 20px 50px;
   box-sizing: border-box;
 }
 
 /* 半透明名片卡 */
 .name-card {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(16, 33, 56, 0.6);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 50px 70px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 2px; /* 更锐利的边角体现学术严谨 */
+  padding: 60px 80px;
   text-align: center;
-  box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.3),
-    inset 0 0 100px rgba(255, 255, 255, 0.05);
-  animation: cardAppear 1.5s ease-out;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  animation: cardAppear 1.5s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
-  overflow: hidden;
-}
-
-.name-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 40%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 60%
-  );
-  animation: shimmer 3s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) rotate(45deg); }
+  max-width: 800px;
+  margin-bottom: 60px;
 }
 
 @keyframes cardAppear {
-  0% { 
-    opacity: 0; 
-    transform: translateY(30px) scale(0.95);
-  }
-  100% { 
-    opacity: 1; 
-    transform: translateY(0) scale(1);
-  }
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .name-card h1 {
   color: #fff;
-  font-size: 3.5rem;
-  margin: 0 0 10px 0;
+  font-size: 4rem;
+  margin: 0 0 15px 0;
   font-weight: 700;
-  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
-  letter-spacing: 2px;
-  position: relative;
-  z-index: 1;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  letter-spacing: 3px;
 }
 
 .name-card .subtitle {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.3rem;
-  margin: 0;
+  color: #FFD700;
+  font-size: 1.5rem;
+  margin: 0 0 20px 0;
   font-style: italic;
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
-  position: relative;
-  z-index: 1;
+  font-family: "Noto Serif JP", serif;
 }
 
 .name-card .affiliation {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1rem;
-  margin-top: 15px;
-  position: relative;
-  z-index: 1;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
 }
 
-/* 科学家贡献动画区域 */
-.scientists-container {
-  margin-top: 60px;
+/* 触发按钮区域 */
+.legacy-trigger-container {
+  text-align: center;
+  margin-bottom: 50px;
+  z-index: 10;
+}
+
+.legacy-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 15px 40px;
+  font-family: "Playfair Display", serif;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  border-radius: 50px;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.legacy-btn:hover {
+  background: rgba(255, 215, 0, 0.1);
+  color: #FFD700;
+  border-color: #FFD700;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.legacy-btn i {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  opacity: 0.6;
+}
+
+/* 科学家贡献网格 (默认隐藏) */
+.scientists-grid {
+  display: none; /* 初始隐藏 */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
   width: 100%;
   max-width: 1200px;
-  position: relative;
-  min-height: 400px;
+  margin-top: 30px;
+  padding-bottom: 80px;
+}
+
+.scientists-grid.active {
+  display: grid;
 }
 
 .scientist-card {
-  position: absolute;
-  background: rgba(10, 26, 47, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 15px;
-  padding: 25px 30px;
-  width: 280px;
-  opacity: 0;
+  background: rgba(12, 24, 41, 0.8);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #1a5f7a; /* 默认蓝色 */
+  padding: 30px;
+  opacity: 0; /* 动画前透明 */
   transform: translateY(30px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
+  position: relative;
 }
 
 .scientist-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
-  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateY(-5px);
+  background: rgba(18, 32, 53, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
 .scientist-card.visible {
@@ -218,99 +230,85 @@ html, body {
   transform: translateY(0);
 }
 
+/* 为前三位巨人设置特殊的金色边框，体现传承 */
+.scientist-card:nth-child(1),
+.scientist-card:nth-child(2),
+.scientist-card:nth-child(3) {
+  border-left-color: #FFD700;
+}
+
 .scientist-card .name {
-  color: #FFD700;
+  color: #fff;
   font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 5px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .scientist-card .years {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.4);
   font-size: 0.85rem;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
+  font-family: sans-serif;
+  letter-spacing: 1px;
 }
 
 .scientist-card .contribution {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 1rem;
   line-height: 1.6;
-  border-left: 3px solid #1a5f7a;
-  padding-left: 15px;
-  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 .scientist-card .equation {
   color: #7fdbff;
   font-family: "Times New Roman", serif;
   font-style: italic;
-  font-size: 1.1rem;
-  margin-top: 12px;
-  text-align: center;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
+  font-size: 1.2rem;
+  text-align: right;
+  opacity: 0.8;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 10px;
 }
 
-/* 位置设定 */
-.scientist-card:nth-child(1) { top: 0; left: 0; }
-.scientist-card:nth-child(2) { top: 0; right: 0; }
-.scientist-card:nth-child(3) { top: 220px; left: 15%; }
-.scientist-card:nth-child(4) { top: 220px; right: 15%; }
-.scientist-card:nth-child(5) { top: 440px; left: 5%; }
-.scientist-card:nth-child(6) { top: 440px; right: 5%; }
-
-/* 浮动粒子效果 */
+/* 浮动粒子 */
 .particle {
   position: fixed;
-  width: 4px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.3);
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   pointer-events: none;
-  animation: float 15s infinite ease-in-out;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+  z-index: 0;
 }
 
 /* 底部引用 */
 .quote-section {
-  margin-top: 80px;
   text-align: center;
-  padding: 30px;
+  padding: 50px 20px;
   max-width: 800px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 50px;
+  display: none; /* 初始也隐藏 */
+}
+.quote-section.visible {
+  display: block;
+  animation: fadeIn 2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .quote-section blockquote {
   color: rgba(255, 255, 255, 0.8);
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-style: italic;
-  line-height: 1.8;
-  margin: 0;
-  position: relative;
-}
-
-.quote-section blockquote::before {
-  content: '"';
-  font-size: 4rem;
-  color: rgba(255, 215, 0, 0.3);
-  position: absolute;
-  left: -30px;
-  top: -20px;
 }
 
 .quote-section .author {
   color: #FFD700;
-  margin-top: 15px;
-  font-size: 1.1rem;
+  margin-top: 20px;
 }
 
 /* 加载动画 */
@@ -320,7 +318,7 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #0A1A2F;
+  background: #061221;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -333,82 +331,37 @@ html, body {
   pointer-events: none;
 }
 
-.loading-content {
-  text-align: center;
-  color: #fff;
-}
-
-.loading-wave {
-  width: 100px;
-  height: 60px;
-  margin: 0 auto 20px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-}
-
-.loading-wave span {
-  width: 8px;
-  background: linear-gradient(180deg, #1a5f7a, #FFD700);
-  border-radius: 4px;
-  animation: waveAnim 1s ease-in-out infinite;
-}
-
-.loading-wave span:nth-child(1) { animation-delay: 0s; }
-.loading-wave span:nth-child(2) { animation-delay: 0.1s; }
-.loading-wave span:nth-child(3) { animation-delay: 0.2s; }
-.loading-wave span:nth-child(4) { animation-delay: 0.3s; }
-.loading-wave span:nth-child(5) { animation-delay: 0.4s; }
-
-@keyframes waveAnim {
-  0%, 100% { height: 10px; }
-  50% { height: 50px; }
-}
-
 .loading-text {
+  color: #FFD700;
+  letter-spacing: 5px;
   font-size: 1.2rem;
-  letter-spacing: 3px;
-  color: rgba(255, 255, 255, 0.7);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
 }
 
 /* 响应式 */
-@media (max-width: 1200px) {
-  .scientists-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-  
-  .scientist-card {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-  }
-}
-
 @media (max-width: 768px) {
-  .topnav {
-    padding: 0 20px;
-  }
-  
-  .topnav a {
-    margin-right: 15px;
-    font-size: 0.9rem;
-  }
-  
   .name-card {
-    padding: 30px 40px;
-  }
-  
-  .name-card h1 {
-    font-size: 2.5rem;
-  }
-  
-  .scientist-card {
+    padding: 40px 20px;
     width: 90%;
-    max-width: 320px;
+  }
+  .name-card h1 {
+    font-size: 2.8rem;
+  }
+  .topnav {
+    justify-content: space-between;
+  }
+  .topnav a {
+    margin: 0 10px;
+    font-size: 0.8rem;
+  }
+  .scientists-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
@@ -416,165 +369,184 @@ html, body {
 
 <body>
 
-<!-- 加载动画 -->
 <div class="loading" id="loading">
-  <div class="loading-content">
-    <div class="loading-wave">
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-    <div class="loading-text">THE GREAT WAVE</div>
-  </div>
+  <div class="loading-text">DEEP OCEAN LOADING...</div>
 </div>
 
-<!-- 神奈川冲浪里背景 -->
 <div class="wave-background"></div>
 <div class="wave-overlay"></div>
 
-<!-- 浮动粒子 -->
 <div id="particles"></div>
 
-<!-- 顶部导航 -->
 <nav class="topnav">
-  <a href="index.html">Home</a>
-  <a href="cv.html">CV</a>
-  <a href="publications.html">Publications</a>
-  <a href="research.html">Research</a>
-  <a href="contact.html">Contact</a>
+  <a href="#">Home</a>
+  <a href="#">Publications</a>
+  <a href="#">Research</a>
+  <a href="#">Contact</a>
 </nav>
 
-<!-- 主要内容 -->
 <div class="main-container">
   
-  <!-- 半透明名片 -->
   <div class="name-card">
     <h1>Guoqiang Liu</h1>
     <p class="subtitle">Physical Oceanographer</p>
     <p class="affiliation">Khalifa University of Science and Technology</p>
+    <p style="margin-top: 30px; color: rgba(255,255,255,0.6); font-style: italic; font-size: 0.95rem;">
+      Exploring the chaotic interface between air and sea.
+    </p>
   </div>
 
-  <!-- 科学家贡献卡片 -->
-  <div class="scientists-container">
+  <div class="legacy-trigger-container">
+    <button class="legacy-btn" onclick="revealGiants()">
+      Standing on the Shoulders of Giants
+      <i id="arrow-icon">▼</i>
+    </button>
+  </div>
+
+  <div class="scientists-grid" id="giantsGrid">
     
-    <div class="scientist-card" data-delay="500">
-      <div class="name">🌊 V. Walfrid Ekman</div>
+    <div class="scientist-card">
+      <div class="name">V. Walfrid Ekman</div>
       <div class="years">1874 – 1954</div>
       <div class="contribution">
-        Ekman Spiral: Wind-driven surface currents deflect due to Earth's rotation, creating a spiral pattern with depth.
+        Revealed how Earth's rotation spirals wind energy into the deep. The foundation of our understanding of the boundary layer.
       </div>
       <div class="equation">τ = ρ A<sub>v</sub> ∂u/∂z</div>
     </div>
 
-    <div class="scientist-card" data-delay="1000">
-      <div class="name">🌀 Henry Stommel</div>
+    <div class="scientist-card">
+      <div class="name">Henry Stommel</div>
       <div class="years">1920 – 1992</div>
       <div class="contribution">
-        Western Intensification: Explained why western boundary currents (Gulf Stream) are stronger than eastern ones.
+        Explained why the Gulf Stream hugs the west. He brought symmetry breaking to the ocean circulation.
       </div>
       <div class="equation">β·v = f·w<sub>E</sub></div>
     </div>
 
-    <div class="scientist-card" data-delay="1500">
-      <div class="name">🔬 Walter Munk</div>
+    <div class="scientist-card">
+      <div class="name">Walter Munk</div>
       <div class="years">1917 – 2019</div>
       <div class="contribution">
-        Ocean acoustics, tides, and wave propagation. Pioneered the study of swell crossing entire ocean basins.
+        Tracked swell across the Pacific. He showed us that waves are the ocean's memory of distant storms.
       </div>
       <div class="equation">c<sub>g</sub> = g/(2ω)</div>
     </div>
 
-    <div class="scientist-card" data-delay="2000">
-      <div class="name">📊 Klaus Hasselmann</div>
+    <div class="scientist-card">
+      <div class="name">Klaus Hasselmann</div>
       <div class="years">1931 – present</div>
       <div class="contribution">
-        Stochastic climate modeling & wave spectrum theory. Nobel Prize 2021 for climate physics.
+        Nobel Laureate. Bridged the gap between stochastic weather and climate. Defined the nonlinear wave interactions.
       </div>
-      <div class="equation">∂F/∂t = S<sub>in</sub> + S<sub>nl</sub> + S<sub>ds</sub></div>
+      <div class="equation">S<sub>nl</sub> ~ E<sup>3</sup></div>
     </div>
 
-    <div class="scientist-card" data-delay="2500">
-      <div class="name">⚡ Carl-Gustaf Rossby</div>
+    <div class="scientist-card">
+      <div class="name">Carl-Gustaf Rossby</div>
       <div class="years">1898 – 1957</div>
       <div class="contribution">
-        Rossby Waves: Large-scale planetary waves in oceans and atmosphere driven by β-effect.
+        Identified the planetary waves that govern the ocean's large-scale adjustement. The conservation of potential vorticity.
       </div>
-      <div class="equation">c = U − β/(k² + l²)</div>
+      <div class="equation">q = (ζ + f)/h</div>
     </div>
 
-    <div class="scientist-card" data-delay="3000">
-      <div class="name">🌡️ Harald Sverdrup</div>
-      <div class="years">1888 – 1957</div>
+    <div class="scientist-card">
+      <div class="name">Andrey Kolmogorov</div>
+      <div class="years">1903 – 1987</div>
       <div class="contribution">
-        Sverdrup Balance: Wind stress curl drives meridional ocean transport in the interior.
+        Though a mathematician, his K41 theory defines the turbulence cascade we study at the wave interface today.
       </div>
-      <div class="equation">βV = curl(τ)/ρ</div>
+      <div class="equation">E(k) ∝ ε<sup>2/3</sup>k<sup>-5/3</sup></div>
     </div>
 
   </div>
 
-  <!-- 底部引用 -->
-  <div class="quote-section">
+  <div class="quote-section" id="quoteSection">
     <blockquote>
-      The ocean is a wilderness reaching round the globe, wilder than a Bengal jungle, and fuller of monsters.
+      "The laws of physics are the same at the surface of the sea as they are at the edge of the universe."
     </blockquote>
-    <div class="author">— Henry David Thoreau</div>
+    <div class="author">— A humble perspective</div>
   </div>
 
 </div>
 
 <script>
-// 加载动画
+// 页面加载逻辑
 window.addEventListener('load', function() {
   setTimeout(() => {
     document.getElementById('loading').classList.add('hidden');
-    // 开始显示科学家卡片
-    animateScientistCards();
-  }, 1500);
+    createParticles();
+  }, 1000);
 });
 
-// 科学家卡片依次出现动画
-function animateScientistCards() {
+// 点击展示“巨人”卡片
+function revealGiants() {
+  const grid = document.getElementById('giantsGrid');
+  const quote = document.getElementById('quoteSection');
+  const btn = document.querySelector('.legacy-btn');
   const cards = document.querySelectorAll('.scientist-card');
   
+  // 1. 显示网格容器
+  grid.classList.add('active');
+  quote.classList.add('visible');
+  
+  // 2. 隐藏或淡化按钮 (可选，这里我们让它变透明一点表示已激活)
+  btn.style.opacity = '0.5';
+  btn.style.pointerEvents = 'none';
+  btn.innerHTML = 'The Lineage of Oceanography'; // 改变文字
+  
+  // 3. 平滑滚动到网格位置
+  grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // 4. 依次触发卡片动画
   cards.forEach((card, index) => {
-    const delay = parseInt(card.dataset.delay) || (index * 500);
-    
     setTimeout(() => {
       card.classList.add('visible');
-    }, delay);
+    }, index * 200); // 每200ms弹出一个
   });
 }
 
-// 创建浮动粒子
+// 粒子特效
 function createParticles() {
   const container = document.getElementById('particles');
-  const particleCount = 30;
+  const particleCount = 40;
   
   for (let i = 0; i < particleCount; i++) {
     const particle = document.createElement('div');
     particle.className = 'particle';
     particle.style.left = Math.random() * 100 + 'vw';
-    particle.style.animationDelay = Math.random() * 15 + 's';
-    particle.style.animationDuration = (10 + Math.random() * 10) + 's';
-    particle.style.width = (2 + Math.random() * 4) + 'px';
-    particle.style.height = particle.style.width;
-    particle.style.opacity = 0.1 + Math.random() * 0.3;
+    particle.style.top = Math.random() * 100 + 'vh';
+    
+    // 随机动画属性
+    const duration = 10 + Math.random() * 20;
+    const delay = Math.random() * 5;
+    
+    particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+    particle.style.opacity = 0.1 + Math.random() * 0.4;
+    
     container.appendChild(particle);
   }
+  
+  // 添加浮动关键帧
+  const styleSheet = document.createElement("style");
+  styleSheet.innerText = `
+    @keyframes float {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      20% { opacity: 0.5; }
+      50% { transform: translateY(-100px) translateX(20px); }
+      80% { opacity: 0.5; }
+      100% { transform: translateY(-200px) translateX(-20px); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(styleSheet);
 }
 
-createParticles();
-
-// 鼠标视差效果
+// 简单的鼠标交互视差
 document.addEventListener('mousemove', (e) => {
-  const x = (e.clientX / window.innerWidth - 0.5) * 20;
-  const y = (e.clientY / window.innerHeight - 0.5) * 20;
-  
-  const bg = document.querySelector('.wave-background');
-  bg.style.transform = `scale(1.05) translate(${x}px, ${y}px)`;
+  const x = (e.clientX / window.innerWidth - 0.5) * 15;
+  const y = (e.clientY / window.innerHeight - 0.5) * 15;
+  document.querySelector('.wave-background').style.transform = 
+    `scale(1.05) translate(${x}px, ${y}px)`;
 });
 </script>
 
