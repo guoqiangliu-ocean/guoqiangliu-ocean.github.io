@@ -3,254 +3,300 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guoqiang Liu - Physical Oceanographer</title>
-
+<title>The Stochastic Wave Interface</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400&display=swap');
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #02060a; /* 深邃的深海黑 */
+    font-family: 'Inter', sans-serif;
+  }
+  
+  #canvas-container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1;
+  }
 
-:root {
-  --bg-dark: #050f1a;
-  --gold: #FFD700;      /* 物理学配色 */
-  --cyan: #7fdbff;      /* 海洋学配色 */
-}
+  /* 简单的暗角遮罩，增加电影质感 */
+  .vignette {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle, transparent 40%, #02060a 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: "Inter", sans-serif;
-  overflow: hidden;
-  background-color: var(--bg-dark);
-  color: #fff;
-}
-
-/* =========================================
-   背景视频
-   ========================================= */
-#bg-video {
-  position: fixed;
-  top: 50%; left: 50%;
-  min-width: 100%; min-height: 100%;
-  width: auto; height: auto;
-  z-index: -10;
-  transform: translate(-50%, -50%);
-  object-fit: cover;
-  filter: brightness(0.5) contrast(1.1);
-}
-.video-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -9;
-  background: radial-gradient(circle at center, rgba(5,15,26,0.2), rgba(5,15,26,0.9));
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-}
-
-/* =========================================
-   导航与Hero
-   ========================================= */
-.topnav {
-  position: fixed; top: 0; width: 100%; padding: 30px 50px;
-  display: flex; justify-content: space-between; align-items: center; z-index: 100;
-  box-sizing: border-box;
-}
-.brand { font-family: "Playfair Display", serif; font-weight: 700; font-size: 1.2rem; letter-spacing: 2px; }
-.nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 40px; font-size: 0.85rem; letter-spacing: 1px; transition: color 0.3s; }
-.nav-links a:hover { color: #fff; }
-
-.hero-container {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  text-align: center; z-index: 10; width: 90%;
-}
-.hero-title {
-  font-family: "Playfair Display", serif; font-size: 5vw; margin: 0;
-  text-shadow: 0 10px 30px rgba(0,0,0,0.5); letter-spacing: -1px;
-  opacity: 0; animation: fadeUp 1.5s ease 0.5s forwards;
-}
-.hero-subtitle {
-  font-weight: 300; color: #a0cbe0; font-size: 1.1rem; margin-top: 20px; letter-spacing: 3px; text-transform: uppercase;
-  opacity: 0; animation: fadeUp 1.5s ease 1s forwards;
-}
-
-/* =========================================
-   角落按钮
-   ========================================= */
-.corner-trigger {
-  position: fixed; bottom: 50px; right: 50px; z-index: 50;
-  opacity: 0; animation: fadeIn 1s ease 2s forwards;
-}
-.legacy-btn {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.6);
-  padding: 12px 25px; border-radius: 50px; cursor: pointer;
-  font-family: "Playfair Display", serif; font-size: 0.9rem; letter-spacing: 1px;
-  transition: all 0.4s ease;
-}
-.legacy-btn:hover {
-  background: rgba(255, 255, 255, 0.15); border-color: #fff; color: #fff;
-  transform: translateY(-3px);
-}
-
-/* =========================================
-   抽屉层 (Giants Drawer)
-   ========================================= */
-.giants-drawer {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: #050a10; /* 纯色深背景，去除透明度以增加沉浸感 */
-  z-index: 200;
-  transform: translateY(100%); transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
-.giants-drawer.open { transform: translateY(0); }
-
-.close-btn {
-  position: absolute; top: 40px; right: 60px;
-  background: none; border: none; color: rgba(255,255,255,0.3);
-  font-size: 2.5rem; cursor: pointer; transition: 0.3s;
-}
-.close-btn:hover { color: #fff; transform: rotate(90deg); }
-
-/* 名字网格 */
-.scientists-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 两列布局 */
-  gap: 40px 100px; /* 行间距40，列间距100 */
-  text-align: center;
-  max-width: 1200px;
-}
-
-.name-card {
-  opacity: 0; transform: translateY(30px);
-  transition: all 0.5s ease;
-  padding: 20px;
-  position: relative;
-  cursor: default;
-}
-
-/* 名字样式 */
-.name-card .name {
-  font-family: "Playfair Display", serif;
-  font-size: 2.5rem; /* 大字号 */
-  color: rgba(255, 255, 255, 0.4); /* 默认暗淡 */
-  transition: all 0.5s ease;
-}
-
-/* 悬停/激活效果 */
-.name-card:hover .name {
-  color: #fff;
-  transform: scale(1.1);
-  text-shadow: 0 0 20px rgba(255,255,255,0.2);
-}
-
-/* 物理学家 - 金色光晕 */
-.name-card.gold:hover .name {
-  text-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-}
-/* 海洋学家 - 青色光晕 */
-.name-card.cyan:hover .name {
-  text-shadow: 0 0 30px rgba(127, 219, 255, 0.4);
-}
-
-/* 动画触发 */
-.giants-drawer.open .name-card {
-  animation: floatUp 0.8s ease forwards;
-}
-
-/* 简单的装饰线，区分两组，但没有文字 */
-.divider {
-  grid-column: span 2;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-  margin: 40px 0;
-  opacity: 0;
-}
-.giants-drawer.open .divider { animation: fadeIn 1s ease 0.8s forwards; }
-
-/* 延迟 */
-.name-card:nth-child(1) { animation-delay: 0.2s; }
-.name-card:nth-child(2) { animation-delay: 0.3s; }
-.name-card:nth-child(3) { animation-delay: 0.4s; }
-.name-card:nth-child(4) { animation-delay: 0.5s; }
-.name-card:nth-child(5) { animation-delay: 0.6s; }
-.divider { animation-delay: 0.7s; }
-.name-card:nth-child(7) { animation-delay: 0.8s; }
-.name-card:nth-child(8) { animation-delay: 0.9s; }
-.name-card:nth-child(9) { animation-delay: 1.0s; }
-.name-card:nth-child(10) { animation-delay: 1.1s; }
-.name-card:nth-child(11) { animation-delay: 1.2s; }
-
-@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeIn { to { opacity: 1; } }
-@keyframes floatUp { to { opacity: 1; transform: translateY(0); } }
-
-@media (max-width: 768px) {
-  .scientists-grid { grid-template-columns: 1fr; gap: 20px; }
-  .name-card .name { font-size: 2rem; }
-  .hero-title { font-size: 3.5rem; }
-}
+  /* 简单的文字，示意这是您的主页 */
+  .content {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    text-align: center;
+    z-index: 2;
+    pointer-events: none; /* 让鼠标穿透文字与背景交互 */
+    mix-blend-mode: overlay; /* 让文字与粒子融合 */
+  }
+  
+  h1 {
+    font-family: "Playfair Display", serif;
+    font-size: 5vw;
+    margin: 0;
+    letter-spacing: -1px;
+    opacity: 0.9;
+  }
 </style>
 </head>
 <body>
 
-<video autoplay muted loop playsinline id="bg-video">
-  <source src="https://videos.pexels.com/video-files/3629511/3629511-hd_1920_1080_25fps.mp4" type="video/mp4">
-</video>
-<div class="video-overlay"></div>
+<div id="canvas-container"></div>
+<div class="vignette"></div>
 
-<nav class="topnav">
-  <div class="brand">G. Liu</div>
-  <div class="nav-links">
-    <a href="#">Research</a>
-    <a href="#">Publications</a>
-    <a href="#">CV</a>
-    <a href="#">Contact</a>
-  </div>
-</nav>
-
-<div class="hero-container">
-  <h1 class="hero-title">Guoqiang Liu</h1>
-  <p class="hero-subtitle">Exploring the most complicated upper ocean dynamics</p>
+<div class="content">
+  <h1>Guoqiang Liu</h1>
 </div>
 
-<div class="corner-trigger">
-  <button class="legacy-btn" onclick="toggleDrawer()">
-    Standing on the Shoulders of Giants
-  </button>
-</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-<div class="giants-drawer" id="giantsDrawer">
-  <button class="close-btn" onclick="toggleDrawer()">×</button>
-  
-  <div class="scientists-grid">
-    
-    <div class="name-card gold"><div class="name">Albert Einstein</div></div>
-    <div class="name-card gold"><div class="name">Ludwig Boltzmann</div></div>
-    <div class="name-card gold"><div class="name">Paul Langevin</div></div>
-    <div class="name-card gold"><div class="name">Ryogo Kubo</div></div>
-    <div class="name-card gold"><div class="name">Robert Zwanzig</div></div>
+<script type="x-shader/x-vertex" id="vertexShader">
+  uniform float uTime;
+  uniform vec2 uMouse;
+  uniform float uPixelRatio;
 
-    <div class="divider"></div>
+  attribute float aScale;
+  attribute vec3 aRandomness;
 
-    <div class="name-card cyan"><div class="name">Frank Snodgrass</div></div>
-    <div class="name-card cyan"><div class="name">Walter Munk</div></div>
-    <div class="name-card cyan"><div class="name">Andrey Kolmogorov</div></div>
-    <div class="name-card cyan"><div class="name">Klaus Hasselmann</div></div>
-    <div class="name-card cyan"><div class="name">O.M. Phillips</div></div>
+  varying vec3 vColor;
 
-  </div>
-</div>
-
-<script>
-  function toggleDrawer() {
-    document.getElementById('giantsDrawer').classList.toggle('open');
+  // 伪随机函数
+  float random(vec2 st) {
+      return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
   }
-  // 简单的视差
-  document.addEventListener('mousemove', (e) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * 10;
-    const y = (e.clientY / window.innerHeight - 0.5) * 10;
-    document.querySelector('.hero-title').style.transform = `translate(${x}px, ${y}px)`;
-  });
+
+  // 3D 噪声函数 (Simplex Noise 简化版)
+  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+  vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+
+  float snoise(vec3 v) {
+    const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+    const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+    vec3 i  = floor(v + dot(v, C.yyy) );
+    vec3 x0 = v - i + dot(i, C.xxx) ;
+    vec3 g = step(x0.yzx, x0.xyz);
+    vec3 l = 1.0 - g;
+    vec3 i1 = min( g.xyz, l.zxy );
+    vec3 i2 = max( g.xyz, l.zxy );
+    vec3 x1 = x0 - i1 + C.xxx;
+    vec3 x2 = x0 - i2 + C.yyy;
+    vec3 x3 = x0 - D.yyy;
+    i = mod289(i);
+    vec4 p = permute( permute( permute(
+              i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
+            + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
+            + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+    float n_ = 0.142857142857;
+    vec3  ns = n_ * D.wyz - D.xzx;
+    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+    vec4 x_ = floor(j * ns.z);
+    vec4 y_ = floor(j - 7.0 * x_ );
+    vec4 x = x_ *ns.x + ns.yyyy;
+    vec4 y = y_ *ns.x + ns.yyyy;
+    vec4 h = 1.0 - abs(x) - abs(y);
+    vec4 b0 = vec4( x.xy, y.xy );
+    vec4 b1 = vec4( x.zw, y.zw );
+    vec4 s0 = floor(b0)*2.0 + 1.0;
+    vec4 s1 = floor(b1)*2.0 + 1.0;
+    vec4 sh = -step(h, vec4(0.0));
+    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+    vec3 p0 = vec3(a0.xy,h.x);
+    vec3 p1 = vec3(a0.zw,h.y);
+    vec3 p2 = vec3(a1.xy,h.z);
+    vec3 p3 = vec3(a1.zw,h.w);
+    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+    p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+    m = m * m;
+    return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
+                                  dot(p2,x2), dot(p3,x3) ) );
+  }
+
+  void main() {
+    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+
+    // --- 物理模拟核心 ---
+
+    // 1. 基础流动：模拟涌浪传播 (从左向右)
+    // 所有的粒子都有一个基础的 group velocity (cg)
+    float flowSpeed = 2.0;
+    float xFlow = mod(modelPosition.x + uTime * flowSpeed, 400.0) - 200.0;
+    modelPosition.x = xFlow;
+
+    // 2. 波浪结构 (Coherent Structure)
+    // 在左侧 (x < -50)，粒子遵循比较严格的正弦轨道，代表有序的涌浪
+    float waveAmplitude = 15.0;
+    float waveFrequency = 0.05;
+    float waveY = sin(modelPosition.x * waveFrequency + uTime) * waveAmplitude;
+    
+    // 3. 随机涡旋力 (Stochastic Vortex Force)
+    // 随着 x 增加 (向右传播)，湍流的影响逐渐增大
+    // progess: 0 (左侧，有序) -> 1 (右侧，混沌)
+    float progress = smoothstep(-150.0, 150.0, modelPosition.x);
+    
+    // 生成湍流场
+    float turbulence = snoise(vec3(modelPosition.x * 0.02, modelPosition.y * 0.02, uTime * 0.2));
+    
+    // 鼠标交互：鼠标作为一个强涡旋源
+    float mouseDistance = distance(vec2(modelPosition.x, modelPosition.y), uMouse * vec2(200.0, 100.0));
+    float mouseInfluence = (1.0 - smoothstep(0.0, 50.0, mouseDistance)) * 20.0;
+    
+    // 最终位置合成：
+    // y = 波浪运动 + (湍流强度 * 随机因子 * 衰减进度) + 鼠标干扰
+    modelPosition.y += waveY + (turbulence * aRandomness.y * 30.0 * progress) + (turbulence * mouseInfluence);
+    modelPosition.z += (turbulence * aRandomness.z * 20.0 * progress);
+
+    // 4. 视觉反馈 (Coloring)
+    vec4 viewPosition = viewMatrix * modelPosition;
+    vec4 projectedPosition = projectionMatrix * viewPosition;
+    gl_Position = projectedPosition;
+
+    // 大小衰减：远处的粒子变小
+    gl_PointSize = uPixelRatio * aScale * (150.0 / -viewPosition.z);
+    
+    // 颜色计算：
+    // 左侧粒子更亮、更蓝 (有序能量)
+    // 右侧粒子更暗、更灰 (能量耗散)
+    vec3 colorSafe = vec3(0.3, 0.8, 1.0); // 青蓝色 (Cyan)
+    vec3 colorChaos = vec3(0.1, 0.2, 0.4); // 深海蓝
+    
+    vColor = mix(colorSafe, colorChaos, progress);
+    
+    // 根据湍流强度增加一点高光
+    vColor += vec3(mouseInfluence * 0.05); 
+  }
 </script>
 
+<script type="x-shader/x-fragment" id="fragmentShader">
+  varying vec3 vColor;
+
+  void main() {
+    // 绘制圆形粒子
+    float strength = distance(gl_PointCoord, vec2(0.5));
+    strength = 1.0 - strength;
+    strength = pow(strength, 3.0);
+
+    vec3 color = vColor * strength;
+    
+    // 简单的透明度混合
+    gl_FragColor = vec4(color, strength);
+    
+    if (strength < 0.01) discard;
+  }
+</script>
+
+<script>
+  // --- Three.js 初始化 ---
+  const canvasContainer = document.getElementById('canvas-container');
+
+  // 场景
+  const scene = new THREE.Scene();
+
+  // 相机
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 120;
+  camera.position.y = 20;
+
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  canvasContainer.appendChild(renderer.domElement);
+
+  // --- 粒子系统 ---
+  const particlesGeometry = new THREE.BufferGeometry();
+  const count = 20000; // 粒子数量
+
+  const positions = new Float32Array(count * 3);
+  const scales = new Float32Array(count);
+  const randomness = new Float32Array(count * 3);
+
+  for(let i = 0; i < count; i++) {
+      const i3 = i * 3;
+
+      // 初始位置分布：长条状
+      positions[i3] = (Math.random() - 0.5) * 400;     // x
+      positions[i3 + 1] = (Math.random() - 0.5) * 50;  // y
+      positions[i3 + 2] = (Math.random() - 0.5) * 50;  // z
+
+      scales[i] = Math.random();
+      
+      // 随机因子
+      randomness[i3] = Math.random();
+      randomness[i3+1] = Math.random();
+      randomness[i3+2] = Math.random();
+  }
+
+  particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  particlesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1));
+  particlesGeometry.setAttribute('aRandomness', new THREE.BufferAttribute(randomness, 3));
+
+  // --- 材质 (Shader) ---
+  const particlesMaterial = new THREE.ShaderMaterial({
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      vertexColors: true,
+      vertexShader: document.getElementById('vertexShader').textContent,
+      fragmentShader: document.getElementById('fragmentShader').textContent,
+      uniforms: {
+          uTime: { value: 0 },
+          uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+          uMouse: { value: new THREE.Vector2(0, 0) }
+      }
+  });
+
+  const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+  scene.add(particles);
+
+  // --- 鼠标交互 ---
+  const mouse = new THREE.Vector2();
+  window.addEventListener('mousemove', (event) => {
+      // 归一化鼠标坐标 (-1 到 1)
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      
+      particlesMaterial.uniforms.uMouse.value = mouse;
+  });
+
+  // --- 窗口自适应 ---
+  window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      particlesMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2);
+  });
+
+  // --- 动画循环 ---
+  const clock = new THREE.Clock();
+
+  const tick = () => {
+      const elapsedTime = clock.getElapsedTime();
+
+      // 更新时间 Uniform
+      particlesMaterial.uniforms.uTime.value = elapsedTime;
+
+      // 缓慢旋转相机，增加立体感
+      scene.rotation.y = Math.sin(elapsedTime * 0.05) * 0.1;
+      scene.rotation.z = Math.cos(elapsedTime * 0.03) * 0.05;
+
+      renderer.render(scene, camera);
+      window.requestAnimationFrame(tick);
+  }
+
+  tick();
+</script>
 </body>
 </html>
