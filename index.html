@@ -6,20 +6,29 @@
 <title>Guoqiang Liu - Physical Oceanographer</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-dark: #050f1a;
+  --text-light: #e0f7ff;
+  --gold: #FFD700;      /* 物理学巨头配色 */
+  --cyan: #7fdbff;      /* 海洋学巨头配色 */
+  --glass: rgba(5, 12, 20, 0.85);
+}
 
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  font-family: "Inter", sans-serif; /* 主体使用现代无衬线体，更显科技感 */
+  font-family: "Inter", sans-serif;
   overflow: hidden; /* 初始禁止滚动，内容在抽屉里 */
-  background-color: #050f1a;
+  background-color: var(--bg-dark);
+  color: var(--text-light);
 }
 
 /* =========================================
-   视频背景 (The Swell)
+   1. 背景视频 (The Swell)
    ========================================= */
 #bg-video {
   position: fixed;
@@ -32,10 +41,10 @@ html, body {
   z-index: -10;
   transform: translateX(-50%) translateY(-50%);
   object-fit: cover;
-  filter: brightness(0.6) contrast(1.1) saturate(1.1); /* 调色：深邃感 */
+  filter: brightness(0.5) contrast(1.2) saturate(1.1); /* 调色：深邃感 */
 }
 
-/* 视频纹理遮罩 - 增加一点噪点防止波纹晕轮 */
+/* 视频纹理遮罩 - 增加电影质感 */
 .video-overlay {
   position: fixed;
   top: 0;
@@ -43,51 +52,71 @@ html, body {
   width: 100%;
   height: 100%;
   z-index: -9;
-  background: radial-gradient(circle at center, rgba(5, 15, 26, 0.2) 0%, rgba(5, 15, 26, 0.8) 100%);
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  background: radial-gradient(circle at center, rgba(5, 15, 26, 0.1) 0%, rgba(5, 15, 26, 0.9) 100%);
+  /* 添加噪点纹理 */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
 }
 
 /* =========================================
-   导航栏
+   2. 导航栏
    ========================================= */
 .topnav {
   position: fixed;
   top: 0;
   width: 100%;
-  padding: 25px 50px;
+  padding: 30px 60px;
   box-sizing: border-box;
   display: flex;
-  justify-content: space-between; /* 两端对齐 */
+  justify-content: space-between;
   align-items: center;
   z-index: 100;
-  mix-blend-mode: overlay; /* 让文字与海浪融合 */
+  transition: all 0.5s ease;
 }
 
 .brand {
   color: #fff;
   font-family: "Playfair Display", serif;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   letter-spacing: 2px;
   text-transform: uppercase;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 .nav-links a {
-  color: #fff;
+  color: rgba(255,255,255,0.8);
   text-decoration: none;
-  margin-left: 40px;
+  margin-left: 50px;
   font-size: 0.9rem;
   letter-spacing: 1px;
-  opacity: 0.8;
-  transition: opacity 0.3s;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.3s;
+  position: relative;
 }
 
 .nav-links a:hover {
-  opacity: 1;
+  color: #fff;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.3s;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
 }
 
 /* =========================================
-   主视觉中心 (Hero Section)
+   3. 主视觉中心 (Hero Section)
    ========================================= */
 .hero-container {
   position: absolute;
@@ -97,76 +126,78 @@ html, body {
   text-align: center;
   z-index: 10;
   width: 90%;
-  max-width: 1000px;
+  max-width: 1200px;
 }
 
 .hero-title {
   font-family: "Playfair Display", serif;
-  font-size: 5rem;
+  font-size: 6rem;
   color: #fff;
   margin: 0;
   line-height: 1.1;
-  text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  text-shadow: 0 10px 40px rgba(0,0,0,0.6);
   opacity: 0;
-  animation: fadeUp 1.5s ease-out 0.5s forwards;
+  animation: fadeUp 1.5s cubic-bezier(0.2, 1, 0.3, 1) 0.5s forwards;
+  letter-spacing: -2px;
 }
 
 .hero-subtitle {
   font-family: "Inter", sans-serif;
   font-weight: 300;
-  color: #a0cbe0; /* 浅蓝灰色 */
-  font-size: 1.2rem;
-  margin-top: 20px;
-  letter-spacing: 2px;
+  color: #a0cbe0;
+  font-size: 1.1rem;
+  margin-top: 30px;
+  letter-spacing: 3px;
   opacity: 0;
-  animation: fadeUp 1.5s ease-out 1s forwards;
+  animation: fadeUp 1.5s cubic-bezier(0.2, 1, 0.3, 1) 1s forwards;
   text-transform: uppercase;
 }
 
 /* =========================================
-   角落里的“巨人”按钮 (Corner Trigger)
+   4. 角落触发器 (Corner Button)
    ========================================= */
 .corner-trigger {
   position: fixed;
-  bottom: 40px;
-  right: 40px;
+  bottom: 50px;
+  right: 50px;
   z-index: 50;
   opacity: 0;
-  animation: fadeIn 1s ease-out 2s forwards;
+  animation: fadeIn 1s ease-out 2.5s forwards;
 }
 
 .legacy-btn {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.8);
-  padding: 15px 25px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 12px 24px;
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-family: "Playfair Display", serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   letter-spacing: 1px;
 }
 
 .legacy-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: #FFD700;
-  color: #FFD700;
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.legacy-btn::before {
-  content: '⚓'; /* 一个小的图标 */
-  font-size: 1.1rem;
+.legacy-btn i {
+  font-style: normal;
+  font-size: 1.2rem;
+  opacity: 0.8;
 }
 
 /* =========================================
-   抽屉式面板 (Bottom Sheet / Overlay)
+   5. 抽屉层 (Giants Drawer)
    ========================================= */
 .giants-drawer {
   position: fixed;
@@ -174,158 +205,255 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(5, 12, 20, 0.92);
-  backdrop-filter: blur(20px);
+  background: rgba(5, 10, 16, 0.95); /* 极深的背景 */
   z-index: 200;
-  transform: translateY(100%); /* 默认隐藏在底部 */
-  transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-  overflow-y: auto; /* 允许内部滚动 */
+  transform: translateY(100%); /* 默认隐藏 */
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 80px 20px;
+  padding: 100px 20px 50px;
+  box-sizing: border-box;
 }
 
 .giants-drawer.open {
   transform: translateY(0);
 }
 
+/* 关闭按钮 */
 .close-btn {
-  position: absolute;
-  top: 30px;
-  right: 40px;
+  position: fixed;
+  top: 40px;
+  right: 60px;
   background: none;
   border: none;
-  color: rgba(255,255,255,0.5);
-  font-size: 2rem;
+  color: rgba(255,255,255,0.4);
+  font-size: 3rem;
+  font-weight: 100;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: all 0.3s;
+  z-index: 201;
+  line-height: 1;
 }
 
 .close-btn:hover {
   color: #fff;
+  transform: rotate(90deg);
+}
+
+.drawer-header {
+  text-align: center;
+  margin-bottom: 80px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease 0.4s;
+}
+
+.giants-drawer.open .drawer-header {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .drawer-title {
-  color: #FFD700;
+  color: #fff;
   font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  margin-bottom: 50px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.5s ease 0.3s;
+  font-size: 3.5rem;
+  margin: 0;
+  background: linear-gradient(to right, #fff, #a0cbe0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.giants-drawer.open .drawer-title {
-  opacity: 1;
-  transform: translateY(0);
+.drawer-subtitle {
+  color: rgba(255,255,255,0.5);
+  margin-top: 15px;
+  font-size: 1.1rem;
+  font-weight: 300;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* 科学家网格 */
 .scientists-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
+  padding-bottom: 100px;
 }
 
 .scientist-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 30px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 4px solid rgba(255, 255, 255, 0.2); /* 默认边框 */
+  padding: 40px;
   border-radius: 4px;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(50px);
+  position: relative;
+  overflow: hidden;
 }
 
 .giants-drawer.open .scientist-card {
-  animation: slideUp 0.6s ease forwards;
+  animation: slideCardUp 0.8s cubic-bezier(0.2, 1, 0.3, 1) forwards;
 }
 
 .scientist-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 215, 0, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* 金色边框 - 物理学家 */
+.scientist-card.gold-border {
+  border-left-color: var(--gold);
+}
+.scientist-card.gold-border:hover {
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+/* 青色边框 - 海洋学家 */
+.scientist-card.cyan-border {
+  border-left-color: var(--cyan);
+}
+.scientist-card.cyan-border:hover {
+  border-color: rgba(127, 219, 255, 0.3);
 }
 
 .scientist-card .name {
   color: #fff;
   font-family: "Playfair Display", serif;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
   margin-bottom: 5px;
 }
 
 .scientist-card .years {
-  color: #FFD700;
-  font-size: 0.8rem;
-  margin-bottom: 15px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  margin-bottom: 20px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  font-family: "Inter", sans-serif;
 }
 
 .scientist-card .desc {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  font-weight: 300;
 }
+
+.scientist-card .desc strong {
+  color: #fff;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+/* 特殊高亮物理学家的头衔 */
+.gold-border .desc strong { color: var(--gold); }
+.cyan-border .desc strong { color: var(--cyan); }
 
 .scientist-card .math {
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px dashed rgba(255,255,255,0.1);
-  color: #a0cbe0;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.6);
   font-family: "Times New Roman", serif;
   font-style: italic;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   text-align: right;
+  transition: color 0.3s;
 }
 
-/* 延迟动画 */
-.scientist-card:nth-child(1) { animation-delay: 0.4s; }
-.scientist-card:nth-child(2) { animation-delay: 0.5s; }
-.scientist-card:nth-child(3) { animation-delay: 0.6s; }
-.scientist-card:nth-child(4) { animation-delay: 0.7s; }
-.scientist-card:nth-child(5) { animation-delay: 0.8s; }
-.scientist-card:nth-child(6) { animation-delay: 0.9s; }
+.scientist-card:hover .math {
+  color: #fff;
+}
 
-/* 动画定义 */
+/* 动画延迟设置 */
+.scientist-card:nth-child(1) { animation-delay: 0.1s; }
+.scientist-card:nth-child(2) { animation-delay: 0.2s; }
+.scientist-card:nth-child(3) { animation-delay: 0.3s; }
+.scientist-card:nth-child(4) { animation-delay: 0.4s; }
+.scientist-card:nth-child(5) { animation-delay: 0.5s; }
+.scientist-card:nth-child(6) { animation-delay: 0.6s; }
+.scientist-card:nth-child(7) { animation-delay: 0.7s; }
+.scientist-card:nth-child(8) { animation-delay: 0.8s; }
+.scientist-card:nth-child(9) { animation-delay: 0.9s; }
+.scientist-card:nth-child(10) { animation-delay: 1.0s; }
+
 @keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
+  from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes slideUp {
+@keyframes slideCardUp {
+  from { opacity: 0; transform: translateY(60px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 响应式 */
-@media (max-width: 768px) {
-  .hero-title { font-size: 3rem; }
-  .corner-trigger { bottom: 20px; right: 20px; }
-  .topnav { padding: 20px; }
-  .nav-links { display: none; } /* 移动端简化 */
+/* 加载遮罩 */
+.loader {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 1s ease;
 }
+.loader.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.loader-text {
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  letter-spacing: 5px;
+  font-size: 0.8rem;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0% {opacity:0.3} 50% {opacity:1} 100% {opacity:0.3} }
 
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .hero-title { font-size: 3.5rem; }
+  .topnav { padding: 20px; }
+  .nav-links { display: none; }
+  .corner-trigger { bottom: 30px; right: 20px; }
+  .drawer-title { font-size: 2.5rem; }
+}
 </style>
 </head>
 <body>
 
+<div class="loader" id="loader">
+  <div class="loader-text">INITIALIZING FLUID DYNAMICS...</div>
+</div>
+
 <video autoplay muted loop playsinline id="bg-video">
-  <source src="https://videos.pexels.com/video-files/855018/855018-hd_1920_1080_30fps.mp4" type="video/mp4">
-  <source src="https://assets.mixkit.co/videos/preview/mixkit-top-aerial-shot-of-seashore-with-rocks-1090-large.mp4" type="video/mp4">
+  <source src="https://videos.pexels.com/video-files/3629511/3629511-hd_1920_1080_25fps.mp4" type="video/mp4">
 </video>
 <div class="video-overlay"></div>
 
 <nav class="topnav">
-  <div class="brand">G. LIU</div>
+  <div class="brand">G. Liu</div>
   <div class="nav-links">
     <a href="#">Research</a>
     <a href="#">Publications</a>
-    <a href="#">CV</a>
+    <a href="#">Code</a>
     <a href="#">Contact</a>
   </div>
 </nav>
@@ -337,77 +465,140 @@ html, body {
 
 <div class="corner-trigger">
   <button class="legacy-btn" onclick="toggleDrawer()">
-    Standing on the Shoulders of Giants
+    <i>⚓</i> Standing on the Shoulders of Giants
   </button>
 </div>
 
 <div class="giants-drawer" id="giantsDrawer">
   <button class="close-btn" onclick="toggleDrawer()">×</button>
   
-  <h2 class="drawer-title">The Lineage of Physical Oceanography</h2>
+  <div class="drawer-header">
+    <h2 class="drawer-title">From Microscopic Chaos to Global Order</h2>
+    <p class="drawer-subtitle">
+      Our work bridges the gap between 20th-century statistical physics and 21st-century oceanography.
+    </p>
+  </div>
   
   <div class="scientists-grid">
-    <div class="scientist-card">
-      <div class="name">V. Walfrid Ekman</div>
-      <div class="years">1874 – 1954</div>
-      <div class="desc">Revealed how Earth's rotation spirals wind energy into the deep. The foundation of the boundary layer.</div>
-      <div class="math">τ = ρ A<sub>v</sub> ∂u/∂z</div>
+    
+    <div class="scientist-card gold-border">
+      <div class="name">Albert Einstein</div>
+      <div class="years">1879 – 1955</div>
+      <div class="desc">
+        <strong>The Originator.</strong> In 1905, he revealed that random molecular kicks cause drag (Brownian Motion). We proved that random turbulent kicks cause swell friction.
+      </div>
+      <div class="math">D = \mu k_B T</div>
     </div>
 
-    <div class="scientist-card" style="border-color: rgba(255,215,0,0.5);">
-      <div class="name">Henry Stommel</div>
-      <div class="years">1920 – 1992</div>
-      <div class="desc">Brought symmetry breaking to ocean circulation. Explained why the Gulf Stream hugs the west.</div>
-      <div class="math">β·v = f·w<sub>E</sub></div>
+    <div class="scientist-card gold-border">
+      <div class="name">Ludwig Boltzmann</div>
+      <div class="years">1844 – 1906</div>
+      <div class="desc">
+        <strong>The Architect of Entropy.</strong> He showed how reversible collisions lead to irreversible time. We derived the wave-subspace H-theorem.
+      </div>
+      <div class="math">S = k \log W</div>
     </div>
 
-    <div class="scientist-card" style="border-color: rgba(255,215,0,0.5);">
+    <div class="scientist-card gold-border">
+      <div class="name">Paul Langevin</div>
+      <div class="years">1872 – 1946</div>
+      <div class="desc">
+        <strong>The Stochastic Dynamicist.</strong> He described motion driven by a fluctuating force. Our theory proves ocean swell obeys a Generalized Langevin Equation.
+      </div>
+      <div class="math">m\dot{v} = -\gamma v + \xi(t)</div>
+    </div>
+
+    <div class="scientist-card gold-border">
+      <div class="name">Ryogo Kubo</div>
+      <div class="years">1920 – 1995</div>
+      <div class="desc">
+        <strong>The Linear Response Master.</strong> He linked transport coefficients to correlation functions. Our attenuation rate is a Green-Kubo integral.
+      </div>
+      <div class="math">\mu \propto \int \langle F(0)F(t) \rangle dt</div>
+    </div>
+
+    <div class="scientist-card gold-border">
+      <div class="name">Robert Zwanzig</div>
+      <div class="years">1928 – 2014</div>
+      <div class="desc">
+        <strong>The Projectionist.</strong> He provided the formal math to separate the slow signal from the fast bath. The framework of our derivation.
+      </div>
+      <div class="math">\mathcal{P} i\mathcal{L} A(t)</div>
+    </div>
+
+    <div class="scientist-card cyan-border">
+      <div class="name">Frank Snodgrass</div>
+      <div class="years">1920 – 1985</div>
+      <div class="desc">
+        <strong>The Observer.</strong> He tracked waves from Antarctica to Alaska in 1966 and asked: "Why don't they die?" Six decades later, we have the answer.
+      </div>
+      <div class="math">\nabla \cdot (E c_g) \approx 0 \text{ ?}</div>
+    </div>
+
+    <div class="scientist-card cyan-border">
       <div class="name">Walter Munk</div>
       <div class="years">1917 – 2019</div>
-      <div class="desc">The Einstein of the Ocean. Deciphered tides, rotation, and how swells traverse entire basins.</div>
-      <div class="math">c<sub>g</sub> = g/(2ω)</div>
+      <div class="desc">
+        <strong>The Einstein of the Ocean.</strong> He predicted the waves for D-Day and defined the global wave energy budget. We identified the missing sink he searched for.
+      </div>
+      <div class="math">c_g = g/(2\omega)</div>
     </div>
 
-    <div class="scientist-card">
-      <div class="name">Klaus Hasselmann</div>
-      <div class="years">1931 – present</div>
-      <div class="desc">Nobel Laureate. Treated waves as a stochastic field, linking weather chaos to climate order.</div>
-      <div class="math">S<sub>nl</sub> ~ E<sup>3</sup></div>
-    </div>
-
-    <div class="scientist-card">
+    <div class="scientist-card cyan-border">
       <div class="name">Andrey Kolmogorov</div>
       <div class="years">1903 – 1987</div>
-      <div class="desc">Defined the energy cascade. The universal language of the turbulence we study today.</div>
-      <div class="math">E(k) ∝ ε<sup>2/3</sup>k<sup>-5/3</sup></div>
+      <div class="desc">
+        <strong>The Lord of Chaos.</strong> He defined the turbulent energy cascade. Our universal $\omega^{8/3}$ scaling law emerges directly from his inertial spectrum.
+      </div>
+      <div class="math">E(k) \propto \varepsilon^{2/3}k^{-5/3}</div>
     </div>
 
-    <div class="scientist-card">
+    <div class="scientist-card cyan-border">
+      <div class="name">Klaus Hasselmann</div>
+      <div class="years">1931 – present</div>
+      <div class="desc">
+        <strong>The Climate Stochasticist.</strong> Nobel Laureate. He treated weather noise as the driver of climate variability. We apply this to the wave interface.
+      </div>
+      <div class="math">\partial F/\partial t = S_{nl} + \dots</div>
+    </div>
+
+    <div class="scientist-card cyan-border">
       <div class="name">O.M. Phillips</div>
       <div class="years">1930 – 2010</div>
-      <div class="desc">Pioneered the dynamics of the upper ocean and surface wave generation mechanics.</div>
-      <div class="math">E(ω) ∝ g²ω⁻⁵</div>
+      <div class="desc">
+        <strong>The Surface Dynamicist.</strong> He defined the equilibrium range of wind seas. We define the dissipation mechanics for the remote swell.
+      </div>
+      <div class="math">E(\omega) \propto g^2\omega^{-5}</div>
     </div>
+
   </div>
 </div>
 
 <script>
+  // 1. 加载动画控制
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hidden');
+    }, 1200);
+  });
+
+  // 2. 抽屉开关控制
   function toggleDrawer() {
     const drawer = document.getElementById('giantsDrawer');
     drawer.classList.toggle('open');
     
-    // 如果打开了抽屉，禁止背景滚动（虽然body已经hidden，双重保险）
+    // 锁定背景滚动
     if (drawer.classList.contains('open')) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'; // 保持隐藏，因为主页只有一屏
     }
   }
 
-  // 简单的视差效果增强沉浸感
+  // 3. 简单的鼠标视差效果
   document.addEventListener('mousemove', (e) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * 20;
-    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    const x = (e.clientX / window.innerWidth - 0.5) * 15;
+    const y = (e.clientY / window.innerHeight - 0.5) * 15;
     
     const title = document.querySelector('.hero-title');
     title.style.transform = `translate(${x}px, ${y}px)`;
