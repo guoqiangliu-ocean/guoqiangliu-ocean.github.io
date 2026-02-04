@@ -1,365 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guoqiang Liu - Physical Oceanographer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guoqiang Liu - Physical Oceanographer</title>
 
-<style>
-/* 引入字体：Playfair Display (学术/经典) + Inter (现代/科技) */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-:root {
-  --gold: #FFD700;      /* 物理学配色 */
-  --cyan: #7fdbff;      /* 海洋学配色 */
-}
+    <style>
+        :root {
+            --gold: #FFD700;      /* 物理学配色 */
+            --cyan: #7fdbff;      /* 海洋学配色 */
+            --bg-dark: #050f1a;
+        }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: "Inter", sans-serif;
-  overflow: hidden;
-  background-color: #050f1a;
-  color: #fff;
-}
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            font-family: "Inter", sans-serif;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            color: #fff;
+        }
 
-/* =========================================
-   1. 真实海浪视频背景
-   ========================================= */
-#bg-video {
-  position: fixed;
-  top: 50%; left: 50%;
-  min-width: 100%; min-height: 100%;
-  width: auto; height: auto;
-  z-index: -10;
-  transform: translate(-50%, -50%);
-  object-fit: cover;
-  filter: brightness(0.5) contrast(1.1); /* 稍微压暗，突出文字 */
-}
+        /* 视频背景 */
+        #bg-video {
+            position: fixed; top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto; z-index: -10;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            filter: brightness(0.4) contrast(1.1);
+        }
 
-.video-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -9;
-  /* 径向渐变，让中心稍微亮一点，四周暗 */
-  background: radial-gradient(circle at center, rgba(5,15,26,0.1) 0%, rgba(5,15,26,0.8) 100%);
-}
+        .video-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -9;
+            background: radial-gradient(circle at center, rgba(5,15,26,0.1) 0%, rgba(5,15,26,0.8) 100%);
+        }
 
-/* =========================================
-   2. 额外的"花哨"层: 海面飞沫/雾气 (Canvas)
-   ========================================= */
-#spray-canvas {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  z-index: -8; /* 在视频之上 */
-  pointer-events: none;
-}
+        #spray-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -8; pointer-events: none;
+        }
 
-/* =========================================
-   3. 顶部导航
-   ========================================= */
-.topnav {
-  position: fixed; top: 0; width: 100%; padding: 30px 50px;
-  display: flex; justify-content: space-between; align-items: center; z-index: 100;
-  box-sizing: border-box;
-}
-.brand { 
-  font-family: "Playfair Display", serif; font-weight: 700; font-size: 1.4rem; letter-spacing: 2px; 
-  text-transform: uppercase;
-}
-.nav-links a { 
-  color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 40px; 
-  font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; 
-}
-.nav-links a:hover { color: #fff; }
+        /* 导航 */
+        .topnav {
+            position: fixed; top: 0; width: 100%; padding: 30px 50px;
+            display: flex; justify-content: space-between; align-items: center; z-index: 100;
+            box-sizing: border-box;
+        }
+        .brand { 
+            font-family: "Playfair Display", serif; font-weight: 700; font-size: 1.4rem; letter-spacing: 2px; 
+            text-transform: uppercase;
+        }
+        .nav-links a { 
+            color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 40px; 
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; 
+        }
+        .nav-links a:hover { color: var(--cyan); }
 
-/* =========================================
-   4. 核心名片 (Name Card)
-   ========================================= */
-.main-container {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 90%; max-width: 1000px; z-index: 10;
-  text-align: center;
-}
+        /* 核心名片 */
+        .main-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; max-width: 1000px; z-index: 10; text-align: center;
+        }
+        .name-card {
+            background: rgba(10, 20, 30, 0.4); 
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 60px 40px; border-radius: 4px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            animation: fadeUp 1.2s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+        }
+        .name-card h1 {
+            font-family: "Playfair Display", serif; font-size: 5rem; margin: 0;
+            letter-spacing: -1px; line-height: 1.1;
+        }
+        .subtitle {
+            font-size: 1.1rem; color: #a0cbe0; margin-top: 15px;
+            letter-spacing: 4px; text-transform: uppercase; font-weight: 300;
+        }
 
-.name-card {
-  /* 磨砂玻璃质感 */
-  background: rgba(10, 20, 30, 0.4); 
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 60px 40px;
-  border-radius: 4px;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.6);
-  animation: fadeUp 1.2s cubic-bezier(0.2, 1, 0.3, 1) forwards;
-}
+        /* 访问计数显示 */
+        .counter-box {
+            margin-top: 30px; font-size: 0.75rem; color: rgba(255,255,255,0.4);
+            letter-spacing: 1px; font-family: 'Inter';
+        }
 
-.name-card h1 {
-  font-family: "Playfair Display", serif;
-  font-size: 5rem;
-  margin: 0;
-  color: #fff;
-  letter-spacing: -1px;
-  line-height: 1.1;
-  text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
+        /* 抽屉层样式 */
+        .giants-drawer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #03080e; z-index: 200;
+            transform: translateY(100%); transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            overflow-y: auto; padding: 100px 0;
+        }
+        .giants-drawer.open { transform: translateY(0); }
 
-.name-card .subtitle {
-  font-family: "Inter", sans-serif;
-  font-size: 1.2rem;
-  color: #a0cbe0; /* 海洋蓝灰 */
-  margin-top: 15px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  font-weight: 300;
-}
+        /* 地图容器 */
+        #visitor-map {
+            width: 85%; max-width: 900px; height: 350px;
+            margin: 40px 0; border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 4px; background: #050f1a;
+        }
 
-.name-card .slogan {
-  margin-top: 40px;
-  font-family: "Playfair Display", serif;
-  font-style: italic;
-  font-size: 1.4rem;
-  color: rgba(255,255,255,0.8);
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 30px;
-  display: inline-block;
-  max-width: 800px;
-}
+        /* 脉冲点动画 */
+        .pulse-icon {
+            background: var(--gold); border-radius: 50%;
+            box-shadow: 0 0 0 rgba(255, 215, 0, 0.8);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
 
-/* =========================================
-   5. 角落触发器 (Corner Button)
-   ========================================= */
-.corner-trigger {
-  position: fixed; bottom: 50px; right: 50px; z-index: 50;
-  opacity: 0; animation: fadeIn 1s ease 1.5s forwards;
-}
+        .close-btn {
+            position: fixed; top: 40px; right: 60px; background: none; border: none;
+            color: rgba(255,255,255,0.3); font-size: 3rem; cursor: pointer; z-index: 201;
+        }
 
-.legacy-btn {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.6);
-  padding: 15px 30px; border-radius: 50px; cursor: pointer;
-  font-family: "Playfair Display", serif; font-size: 1rem; letter-spacing: 1px;
-  transition: all 0.4s ease; display: flex; align-items: center; gap: 10px;
-}
-.legacy-btn:hover {
-  background: rgba(255, 255, 255, 0.15); border-color: #fff; color: #fff;
-  transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-}
+        .scientists-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px 100px; text-align: center;
+        }
+        .name-only-card .name {
+            font-family: "Playfair Display", serif; font-size: 2.5rem;
+            color: rgba(255,255,255,0.2); transition: 0.5s;
+        }
+        .name-only-card:hover .name { color: #fff; transform: scale(1.05); }
 
-/* =========================================
-   6. 抽屉层 (Giants Drawer) - 仅名字，防泄密
-   ========================================= */
-.giants-drawer {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: #060b11; /* 纯色不透明背景，增加神秘感 */
-  z-index: 200;
-  transform: translateY(100%); transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
-.giants-drawer.open { transform: translateY(0); }
+        .corner-trigger { position: fixed; bottom: 50px; right: 50px; z-index: 50; }
+        .legacy-btn {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 0.6);
+            padding: 15px 30px; border-radius: 50px; cursor: pointer; font-family: "Playfair Display";
+            transition: 0.4s;
+        }
+        .legacy-btn:hover { border-color: #fff; color: #fff; transform: translateY(-3px); }
 
-.close-btn {
-  position: fixed; top: 40px; right: 60px; background: none; border: none;
-  color: rgba(255,255,255,0.3); font-size: 3rem; cursor: pointer; transition: 0.3s; z-index: 201;
-}
-.close-btn:hover { color: #fff; transform: rotate(90deg); }
-
-.scientists-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); /* 两列纪念碑式布局 */
-  gap: 40px 120px; text-align: center;
-}
-
-.name-only-card {
-  padding: 20px; opacity: 0; transform: translateY(40px);
-  transition: all 0.4s ease; cursor: default;
-}
-
-.name-only-card .name {
-  font-family: "Playfair Display", serif;
-  font-size: 3rem; /* 巨大字号 */
-  color: rgba(255,255,255,0.3); /* 默认暗淡 */
-  transition: all 0.5s ease;
-}
-
-/* 悬停光效 */
-.name-only-card:hover .name { color: #fff; transform: scale(1.05); }
-/* 物理学金光 */
-.name-only-card.gold:hover .name { text-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
-/* 海洋学青光 */
-.name-only-card.cyan:hover .name { text-shadow: 0 0 30px rgba(127, 219, 255, 0.5); }
-
-/* 分割线 */
-.divider {
-  grid-column: span 2; height: 1px; 
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-  margin: 30px 0; opacity: 0;
-}
-
-/* 抽屉打开时的动画 */
-.giants-drawer.open .name-only-card { animation: floatUp 0.8s ease forwards; }
-.giants-drawer.open .divider { animation: fadeIn 1s ease 0.6s forwards; }
-
-/* 顺序延迟 */
-.name-only-card:nth-child(1) { animation-delay: 0.1s; }
-.name-only-card:nth-child(2) { animation-delay: 0.2s; }
-.name-only-card:nth-child(3) { animation-delay: 0.3s; }
-.name-only-card:nth-child(4) { animation-delay: 0.4s; }
-.name-only-card:nth-child(5) { animation-delay: 0.5s; }
-.divider { animation-delay: 0.6s; }
-.name-only-card:nth-child(7) { animation-delay: 0.7s; }
-.name-only-card:nth-child(8) { animation-delay: 0.8s; }
-.name-only-card:nth-child(9) { animation-delay: 0.9s; }
-.name-only-card:nth-child(10) { animation-delay: 1.0s; }
-.name-only-card:nth-child(11) { animation-delay: 1.1s; }
-
-@keyframes floatUp { to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeIn { to { opacity: 1; } }
-@keyframes fadeUp { from {opacity:0; transform: translateY(40px);} to {opacity:1; transform: translateY(0);} }
-
-/* 响应式 */
-@media (max-width: 768px) {
-  .name-card h1 { font-size: 3rem; }
-  .name-card { width: 85%; padding: 40px 20px; }
-  .scientists-grid { grid-template-columns: 1fr; gap: 20px; }
-  .name-only-card .name { font-size: 2rem; }
-  .nav-links { display: none; }
-  .corner-trigger { bottom: 30px; right: 20px; }
-}
-</style>
+        @keyframes fadeUp { from {opacity:0; transform: translateY(40px);} to {opacity:1; transform: translateY(0);} }
+    </style>
 </head>
 <body>
 
 <video autoplay muted loop playsinline id="bg-video">
-  <source src="https://videos.pexels.com/video-files/855018/855018-hd_1920_1080_30fps.mp4" type="video/mp4">
+    <source src="https://videos.pexels.com/video-files/855018/855018-hd_1920_1080_30fps.mp4" type="video/mp4">
 </video>
 <div class="video-overlay"></div>
-
 <canvas id="spray-canvas"></canvas>
 
 <nav class="topnav">
-  <div class="brand">G. Liu</div>
-  <div class="nav-links">
-    <a href="#">Research</a>
-    <a href="#">Publications</a>
-    <a href="#">CV</a>
-    <a href="#">Contact</a>
-  </div>
+    <div class="brand">G. Liu</div>
+    <div class="nav-links">
+        <a href="#">Research</a><a href="#">Publications</a><a href="#">CV</a>
+    </div>
 </nav>
 
 <div class="main-container">
-  <div class="name-card">
-    <h1>Guoqiang Liu</h1>
-    <div class="subtitle">Physical Oceanographer</div>
-    <div class="slogan">
-      Exploring the most complicated upper ocean dynamics
+    <div class="name-card">
+        <h1>Guoqiang Liu</h1>
+        <div class="subtitle">Physical Oceanographer</div>
+        <div class="counter-box">
+            <span id="visitor-ip">INITIALIZING SENSOR...</span> 
+            <span style="margin: 0 15px; opacity: 0.3;">|</span>
+            STATION ACCESS: <span id="busuanzi_value_site_pv" style="color: var(--gold);">..</span>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="corner-trigger">
-  <button class="legacy-btn" onclick="toggleDrawer()">
-    Standing on the Shoulders of Giants
-  </button>
+    <button class="legacy-btn" onclick="toggleDrawer()">Standing on the Shoulders of Giants</button>
 </div>
 
 <div class="giants-drawer" id="giantsDrawer">
-  <button class="close-btn" onclick="toggleDrawer()">×</button>
-  
-  <div class="scientists-grid">
+    <button class="close-btn" onclick="toggleDrawer()">×</button>
     
-    <div class="name-only-card gold"><div class="name">Albert Einstein</div></div>
-    <div class="name-only-card gold"><div class="name">Ludwig Boltzmann</div></div>
-    <div class="name-only-card gold"><div class="name">Paul Langevin</div></div>
-    <div class="name-only-card gold"><div class="name">Ryogo Kubo</div></div>
-    <div class="name-only-card gold"><div class="name">Robert Zwanzig</div></div>
+    <div id="visitor-map"></div>
+    <div id="map-status" style="font-size: 0.7rem; color: var(--cyan); letter-spacing: 2px; margin-bottom: 50px;">CONNECTING TO GLOBAL NODES...</div>
 
-    <div class="divider"></div>
-
-    <div class="name-only-card cyan"><div class="name">Frank Snodgrass</div></div>
-    <div class="name-only-card cyan"><div class="name">Walter Munk</div></div>
-    <div class="name-only-card cyan"><div class="name">Andrey Kolmogorov</div></div>
-    <div class="name-only-card cyan"><div class="name">Klaus Hasselmann</div></div>
-    <div class="name-only-card cyan"><div class="name">O.M. Phillips</div></div>
-
-  </div>
+    <div class="scientists-grid">
+        <div class="name-only-card"><div class="name">Albert Einstein</div></div>
+        <div class="name-only-card"><div class="name">Ludwig Boltzmann</div></div>
+        <div class="name-only-card"><div class="name">Walter Munk</div></div>
+        <div class="name-only-card"><div class="name">Andrey Kolmogorov</div></div>
+    </div>
 </div>
 
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
 <script>
-// 抽屉开关
+let map;
+
+// 1. 抽屉开关逻辑
 function toggleDrawer() {
-  const drawer = document.getElementById('giantsDrawer');
-  drawer.classList.toggle('open');
+    const drawer = document.getElementById('giantsDrawer');
+    drawer.classList.toggle('open');
+    if (drawer.classList.contains('open')) {
+        setTimeout(() => {
+            if (!map) { trackVisitor(); } 
+            else { map.invalidateSize(); }
+        }, 850);
+    }
 }
 
-// === 额外的花哨动画：海面飞沫 (Sea Spray/Mist) ===
-// 这是一个模拟空气中水雾流动的粒子系统，增加了画面的层次感
+// 2. 地图与 IP 追踪
+async function trackVisitor() {
+    try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        const { latitude, longitude, city, country_name, ip } = data;
+
+        // 更新首页 IP 显示
+        document.getElementById('visitor-ip').innerText = `SIGNAL FROM: ${city.toUpperCase()} [${ip}]`;
+        document.getElementById('map-status').innerText = `NODE ACTIVE: ${city}, ${country_name}`;
+
+        // 初始化地图
+        if (!map) {
+            map = L.map('visitor-map', { center: [latitude, longitude], zoom: 3, zoomControl: false, attributionControl: false });
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+        }
+
+        const pulseIcon = L.divIcon({ className: 'pulse-icon', iconSize: [12, 12] });
+        L.marker([latitude, longitude], { icon: pulseIcon }).addTo(map)
+            .bindPopup(`<span style="color:#000">${city}</span>`).openPopup();
+        
+        map.flyTo([latitude, longitude], 4);
+    } catch (e) {
+        document.getElementById('visitor-ip').innerText = "OFFLINE MODE";
+    }
+}
+
+// 3. 海面飞沫 Canvas 动画 (保持原有逻辑)
 const canvas = document.getElementById('spray-canvas');
 const ctx = canvas.getContext('2d');
-let w, h;
-let particles = [];
-
-function resize() {
-  w = canvas.width = window.innerWidth;
-  h = canvas.height = window.innerHeight;
-}
+let w, h, particles = [];
+function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize);
 resize();
 
 class Particle {
-  constructor() {
-    this.init();
-  }
-  
-  init() {
-    // 随机出现在屏幕各个角落
-    this.x = Math.random() * w;
-    this.y = Math.random() * h;
-    // 缓慢的水平漂移，模拟海风
-    this.vx = (Math.random() - 0.5) * 0.8; 
-    this.vy = (Math.random() - 0.5) * 0.4;
-    // 大小随机，模拟远近
-    this.size = Math.random() * 2.5;
-    this.alpha = 0;
-    this.life = 0;
-    this.maxLife = 100 + Math.random() * 200;
-  }
-  
-  update() {
-    this.x += this.vx;
-    this.y += this.vy;
-    this.life++;
-    
-    // 淡入淡出效果
-    if (this.life < 50) this.alpha = this.life / 50 * 0.3; // 最大透明度0.3，很淡
-    else if (this.life > this.maxLife - 50) this.alpha = (this.maxLife - this.life) / 50 * 0.3;
-    
-    if (this.life > this.maxLife) this.init();
-    
-    // 边界检查
-    if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.init();
-  }
-  
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    // 浅青色，像海水飞沫
-    ctx.fillStyle = `rgba(200, 240, 255, ${this.alpha})`;
-    ctx.fill();
-  }
+    constructor() { this.init(); }
+    init() {
+        this.x = Math.random() * w; this.y = Math.random() * h;
+        this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.3;
+        this.size = Math.random() * 2; this.alpha = 0; this.life = 0; this.maxLife = 100 + Math.random() * 200;
+    }
+    update() {
+        this.x += this.vx; this.y += this.vy; this.life++;
+        if (this.life < 50) this.alpha = this.life / 50 * 0.2;
+        else if (this.life > this.maxLife - 50) this.alpha = (this.maxLife - this.life) / 50 * 0.2;
+        if (this.life > this.maxLife || this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.init();
+    }
+    draw() {
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200, 240, 255, ${this.alpha})`; ctx.fill();
+    }
 }
-
-// 生成200个飞沫粒子
-for(let i=0; i<200; i++) particles.push(new Particle());
-
+for(let i=0; i<150; i++) particles.push(new Particle());
 function animate() {
-  ctx.clearRect(0, 0, w, h);
-  particles.forEach(p => {
-    p.update();
-    p.draw();
-  });
-  requestAnimationFrame(animate);
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
 }
 animate();
+trackVisitor(); // 初始加载即获取 IP
 </script>
 
 </body>
