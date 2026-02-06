@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guoqiang Liu - 物理海洋学家</title>
+    <title>Guoqiang Liu - Physical Oceanographer</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -25,10 +25,9 @@
             background-color: var(--bg-dark);
             color: #fff;
             min-height: 100vh;
-            /* 移除 overflow:hidden，允许自然滚动 */
         }
 
-        /* 固定背景层 */
+        /* Fixed Background Layers */
         #bg-video {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -10; object-fit: cover;
@@ -46,7 +45,7 @@
             z-index: -8; pointer-events: none;
         }
 
-        /* 顶部导航 - Flex布局 */
+        /* Top Navigation */
         .topnav {
             position: fixed; top: 0; width: 100%; height: 70px;
             display: flex; justify-content: space-between; align-items: center;
@@ -56,26 +55,27 @@
         }
 
         .brand { font-family: "Playfair Display"; font-weight: 700; font-size: 1.4rem; color: #fff; text-decoration: none; }
-        .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 25px; font-size: 0.8rem; text-transform: uppercase; }
+        .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 25px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* 主容器 - 使用 Flex 垂直居中，不再使用绝对定位 */
+        /* Main Container */
         .main-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding: 100px 20px; /* 给导航栏留出空间 */
+            padding: 100px 20px;
         }
 
         .name-card {
             background: var(--glass);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 50px; border-radius: 12px;
+            padding: 60px 50px; border-radius: 12px;
             text-align: center;
-            max-width: 800px; width: 100%;
+            max-width: 900px; width: 100%;
             box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
         }
 
         .name-card h1 {
@@ -89,33 +89,23 @@
             letter-spacing: 4px; text-transform: uppercase;
         }
 
-        /* 科学家致敬区块 - Grid网格布局 */
-        .scientists-section {
-            width: 100%; max-width: 1100px; margin-top: 80px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+        .mission-text {
+            margin-top: 30px; 
+            font-size: 1.4rem;
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 300;
+            opacity: 0.9;
         }
 
-        .scientist-card {
-            background: rgba(255,255,255,0.03);
-            border-left: 3px solid var(--gold);
-            padding: 30px;
-            transition: 0.3s ease;
-        }
-
-        .scientist-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-5px); }
-
-        .sc-name { font-family: "Playfair Display"; font-size: 1.6rem; color: var(--gold); margin-bottom: 10px; }
-        .sc-desc { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.6; }
-
-        /* 地图容器 */
+        /* Map Styling */
         #visitor-map {
-            width: 100%; height: 350px; border-radius: 8px; margin-top: 50px;
+            width: 100%; max-width: 900px; height: 300px; border-radius: 8px; 
+            margin-top: 20px;
             border: 1px solid rgba(255,255,255,0.1);
+            filter: grayscale(0.5) contrast(1.2);
         }
 
-        /* 访客信息 */
         .visitor-info { margin-top: 20px; font-size: 0.7rem; color: var(--cyan); letter-spacing: 2px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -143,30 +133,15 @@
     <section class="name-card animate-in">
         <h1>Guoqiang Liu</h1>
         <div class="subtitle">Physical Oceanographer</div>
-        <p style="margin-top: 25px; opacity: 0.7; font-weight: 300;">探索深海环流与海洋能量耗散的奥秘</p>
+        <p class="mission-text">Explore the most complicated upper ocean dynamics</p>
     </section>
 
-    <div class="scientists-section animate-in" style="animation-delay: 0.3s;">
-        <div class="scientist-card">
-            <div class="sc-name">Walter Munk</div>
-            <div class="sc-desc">“海洋学界的爱因斯坦”。他在波浪预报、潮汐分析及海洋声学领域的贡献是现代物理海洋学的基石。</div>
-        </div>
-        <div class="scientist-card">
-            <div class="sc-name">Andrey Kolmogorov</div>
-            <div class="sc-desc">定义了湍流统计理论。他的能量级联平衡模型（-5/3次方律）是研究海洋混合的核心工具。</div>
-        </div>
-        <div class="scientist-card">
-            <div class="sc-name">Henry Stommel</div>
-            <div class="sc-desc">揭示了“西边界强化”现象，完美解释了为何墨西哥湾流、黑潮等海流如此强劲。</div>
-        </div>
-    </div>
-
-    <div id="visitor-map" class="animate-in" style="animation-delay: 0.6s;"></div>
-    <div class="visitor-info" id="visitor-ip">STATION ACCESS INITIALIZING...</div>
+    <div id="visitor-map" class="animate-in" style="animation-delay: 0.3s;"></div>
+    <div class="visitor-info animate-in" id="visitor-ip" style="animation-delay: 0.5s;">STATION ACCESS INITIALIZING...</div>
 </div>
 
 <script>
-    // 1. 地图与 IP 逻辑
+    // 1. Map and IP Logic
     async function initStation() {
         try {
             const res = await fetch('https://ipapi.co/json/');
@@ -175,7 +150,7 @@
 
             document.getElementById('visitor-ip').innerText = `GLOBAL NODE: ${city.toUpperCase()} | IP: ${ip} | STATION ACTIVE`;
 
-            const map = L.map('visitor-map', { center: [latitude, longitude], zoom: 4, zoomControl: false, attributionControl: false });
+            const map = L.map('visitor-map', { center: [latitude, longitude], zoom: 3, zoomControl: false, attributionControl: false });
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
 
             const icon = L.divIcon({ 
@@ -188,7 +163,7 @@
         }
     }
 
-    // 2. Canvas 飞沫背景
+    // 2. Canvas Spray Effect
     const canvas = document.getElementById('spray-canvas');
     const ctx = canvas.getContext('2d');
     let w, h, particles = [];
