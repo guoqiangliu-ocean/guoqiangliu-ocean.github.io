@@ -143,19 +143,17 @@ var NODES = [
  st_zh:"f_v = u_φ × ω · NS 中波能变化的唯一非粘性通道",
  st_en:"f_v = u_φ × ω · Sole non-viscous channel for wave energy in NS",
  tg:[["t-id","精确推导","Exact"],["t-th","能量定理","Energy Thm"]],
- ss:[{t_zh:"涡力形式的推导",t_en:"Vortex-Force Form",cl:"#2563eb",it:[
-  {l_zh:"向量恒等式 → 涡力方程",l_en:"Vector Identity → Vortex-Force Eqn",
-   eq:"\\partial_t\\boldsymbol{U}=\\boldsymbol{U}\\times\\boldsymbol{\\omega}-\\frac{1}{\\rho}\\nabla\\Pi+\\nu\\nabla^2\\boldsymbol{U}",
-   x_zh:"对总场 U 利用 (U·∇)U = ω×U + ∇(|U|²/2)，吸收梯度项到修正压力 Π = P/ρ + |U|²/2。由 Helmholtz 分解 U = u_φ + u_ψ 和 ∇×u_φ = 0，总涡力 U × ω 中与波-流能量交换相关的分量精确地为 u_φ × ω。",
-   x_en:"For total field U, using (U·∇)U = ω×U + ∇(|U|²/2), absorbing gradients into modified pressure Π = P/ρ + |U|²/2. From Helmholtz U = u_φ + u_ψ and ∇×u_φ = 0, the wave-flow energy exchange component of U × ω is exactly u_φ × ω."},
- ]},{t_zh:"波能交换定理 (Eq.S.11)",t_en:"Wave-Energy Exchange Theorem (Eq.S.11)",cl:"#059669",it:[
+ ss:[{t_zh:"涡力形式",t_en:"Vortex-Force Form",cl:"#2563eb",it:[
+  {l_zh:"精确推导（见 SI §S1.B Eq.S.7–9）",l_en:"Exact derivation (see SI §S1.B Eq.S.7–9)",
+   x_zh:"对总场 NS 方程利用向量恒等式，吸收梯度项到修正压力 Π，得到涡力形式。由 Helmholtz 分解和 ∇×u_φ = 0，波-流能量交换的分量精确地为 u_φ × ω。",
+   x_en:"Applying vector identities to the total-field NS, absorbing gradients into modified pressure Π, yields the vortex-force form. From Helmholtz decomposition and ∇×u_φ = 0, the wave-flow energy exchange component is exactly u_φ × ω."},
+ ]},{t_zh:"波能交换定理（见 SI §S1.B Eq.S.10–11）",t_en:"Wave-Energy Exchange Theorem (see SI §S1.B Eq.S.10–11)",cl:"#059669",it:[
   {l_zh:"精确结果",l_en:"Exact Result",
-   eq:"\\frac{d}{dt}\\int\\tfrac{1}{2}\\rho|\\boldsymbol{u}_\\phi|^2\\,dV=\\rho\\!\\int\\boldsymbol{u}_\\phi\\cdot(\\boldsymbol{u}_\\phi\\times\\boldsymbol{\\omega})\\,dV-\\rho\\nu\\!\\int|\\nabla\\boldsymbol{u}_\\phi|^2\\,dV",
-   x_zh:"投影到无旋子空间的能量预算。自平流项在积分后为零；修正压力项因散度定理为零。u_φ × ω 是 NS 中波能非粘性变化的唯一通道——由精确计算证明，不是假设。总动能中非线性项做功整体为零，但此处考察的是波子空间能量，耦合项不消失。",
-   x_en:"Energy budget projected onto the irrotational subspace. Self-advection integrates to zero; modified pressure vanishes by divergence theorem. u_φ × ω is the sole non-viscous channel for wave energy change — proven exactly, not assumed. Total KE nonlinear work vanishes globally, but here we examine wave-subspace energy where the coupling term survives."},
+   x_zh:"将 NS 投影到无旋子空间得到波能预算。自平流项与修正压力项积分后为零。u_φ × ω 是 NS 中波能非粘性变化的唯一通道——由精确计算证明，不是假设。",
+   x_en:"Projecting NS onto the irrotational subspace yields the wave-energy budget. Self-advection and modified pressure integrate to zero. u_φ × ω is the sole non-viscous channel for wave energy change in NS — proven exactly, not assumed."},
   {l_zh:"粘性通道排除",l_en:"Viscous Channel Excluded",
-   x_zh:"分子粘性空间衰减率 μ_visc = 4νk²/c_g。对 T = 14–20 s 涌浪，μ_visc ~ 10⁻¹¹–10⁻¹⁰ m⁻¹（ν ~ 10⁻⁶ m²/s），比观测 ~10⁻⁷ 低 3–4 个量级。长周期涌浪（T ≥ 20 s）差距更大，可达 4 个量级以上。",
-   x_en:"Molecular viscous spatial decay rate μ_visc = 4νk²/c_g. For T = 14–20 s swell, μ_visc ~ 10⁻¹¹–10⁻¹⁰ m⁻¹ (ν ~ 10⁻⁶ m²/s), three to four orders of magnitude below observations ~10⁻⁷. For long-period swell (T ≥ 20 s) the gap exceeds four orders."},
+   x_zh:"分子粘性空间衰减率 μ_visc = 4νk²/c_g。对 T = 14–20 s 涌浪，μ_visc ~ 10⁻¹¹–10⁻¹⁰ m⁻¹，比观测 ~10⁻⁷ 低 3–4 个量级。",
+   x_en:"Molecular viscous spatial decay rate μ_visc = 4νk²/c_g. For T = 14–20 s swell, μ_visc ~ 10⁻¹¹–10⁻¹⁰ m⁻¹, three to four orders below observations ~10⁻⁷."},
  ]}]},
 
 {id:"3ly",n:"04",cl:"#2563eb",
@@ -163,7 +161,7 @@ var NODES = [
  st_zh:"ω = Ω̄ + ω' + ω_wave · 三通道排除 → SVF 为唯一不可逆通道",
  st_en:"ω = Ω̄ + ω' + ω_wave · Three-channel exclusion → SVF is the sole irreversible channel",
  tg:[["t-id","精确分解","Exact"],["t-as","A1–A2","A1–A2"]],
- ss:[{t_zh:"McWilliams 三层分解",t_en:"McWilliams Three-Layer Decomposition",cl:"#2563eb",it:[
+ ss:[{t_zh:"三层涡度分解",t_en:"Three-Layer Vorticity Decomposition",cl:"#2563eb",it:[
   {l_zh:"三层结构",l_en:"Three Layers",
    eq:"\\boldsymbol{\\omega}=\\bar{\\boldsymbol{\\Omega}}+\\boldsymbol{\\omega}'+\\boldsymbol{\\omega}_{\\mathrm{wave}}",
    x_zh:"Ω̄ = 系综平均涡度；ω' = 湍流涡度涨落（⟨ω'⟩ = 0）；ω_wave = 波动奴役涡度（≈ ∇×(ξ×Ω_s)，无独立自由度）。两次平均操作：相位平均分离 ω_wave，系综平均分离 Ω̄ 和 ω'。",
@@ -321,8 +319,8 @@ var NODES = [
  ss:[{t_zh:"标度律推导",t_en:"Derivation of Scaling Law",cl:"#059669",it:[
   {l_zh:"核心结果",l_en:"Core Result",
    eq:"\\mu_E(\\omega)=C_{\\mathrm{tot}}\\,\\varepsilon_{\\mathrm{eff}}^{2/3}\\,g^{-7/3}\\,\\omega^{8/3}",
-   x_zh:"将 Kolmogorov 涡度谱代入力核积分，所有积分解析可做。8/3 指数来源：力核积分中 τ_eff = 1/(qc_g) 引入一个 c_g⁻¹ 因子，Γ(k) ∝ ε^{2/3} k^{1/3} / c_g（几何核峰值 q ~ k + 涡度谱 q^{1/3} + 去相关 1/(qc_g)）；空间衰减率 μ = 2Γ/c_g ∝ ε^{2/3} k^{1/3} / c_g²；深水 c_g ∝ k^{-1/2} → c_g² ∝ k^{-1} → μ ∝ k^{1/3+1} = k^{4/3}；再由色散 k = ω²/g → μ ∝ ω^{8/3}。",
-   x_en:"Substituting Kolmogorov vorticity spectrum into the force kernel, all integrals evaluate analytically. Origin of 8/3: τ_eff = 1/(qc_g) introduces c_g⁻¹ into Γ, giving Γ(k) ∝ ε^{2/3} k^{1/3} / c_g (from geometric kernel peak q ~ k + vorticity spectrum q^{1/3} + decorrelation 1/(qc_g)); spatial decay rate μ = 2Γ/c_g ∝ ε^{2/3} k^{1/3} / c_g²; deep water c_g ∝ k^{-1/2} → c_g² ∝ k^{-1} → μ ∝ k^{1/3+1} = k^{4/3}; then dispersion k = ω²/g → μ ∝ ω^{8/3}."},
+   x_zh:"将 Kolmogorov 涡度谱代入力核积分（SI §S3–S4），所有积分解析可做。ω^{8/3} 指数由力核积分的 k 标度 + 深水色散关系 k = ω²/g 唯一确定，推导细节见 SI §S4–S5。",
+   x_en:"Substituting Kolmogorov vorticity spectrum into the force kernel integral (SI §S3–S4), all integrals evaluate analytically. The ω^{8/3} exponent is uniquely determined by the k-scaling of the force kernel integral + deep-water dispersion k = ω²/g; see SI §S4–S5 for the full derivation."},
  ]},{t_zh:"C_tot = 2π/3 的五因子分解",t_en:"Five-Factor Decomposition: C_tot = 2π/3",cl:"#059669",it:[
   {l_zh:"分解公式",l_en:"Decomposition",
    eq:"C_{\\mathrm{tot}}=4\\cdot C_K\\cdot \\widetilde{G}_{\\mathrm{geom}}\\cdot C_{\\mathcal{S}}\\cdot C_\\tau\\cdot C_E=\\frac{2\\pi}{3}\\approx 2.094",
@@ -335,19 +333,14 @@ var NODES = [
  st_zh:"⟨μ̂⟩ = 2μ_E · Var(μ̂) = 2μ_E/L · c₀ = 1",
  st_en:"⟨μ̂⟩ = 2μ_E · Var(μ̂) = 2μ_E/L · c₀ = 1",
  tg:[["t-re","精确常数","Exact Constants"],["t-re","观测修正","Obs. Correction"]],
- ss:[{t_zh:"遭遇级随机动力学",t_en:"Encounter-Level Stochastic Dynamics",cl:"#db2777",it:[
-  {l_zh:"能量增量的均值与方差",l_en:"Mean and Variance of Energy Increment",
-   x_zh:"ξ = ΔE/E：⟨ξ⟩ = −αδ²（衰减），Var(ξ) = β_ξ δ²（涨落）。FDR-II 精确锁定 α/β_ξ = 1/2——不依赖 δ、ℓ_corr 或 C_F(τ) 的具体函数形式。关键代数：FDR-II 给出 Γ = I_F/(2E_k)，导致 α ∝ 2Γ，β_ξ ∝ 4Γ，故 α = β_ξ/2。",
-   x_en:"ξ = ΔE/E: ⟨ξ⟩ = −αδ² (decay), Var(ξ) = β_ξ δ² (fluctuation). FDR-II exactly locks α/β_ξ = 1/2 — independent of δ, ℓ_corr, or C_F(τ) form. Key algebra: FDR-II gives Γ = I_F/(2E_k), leading to α ∝ 2Γ, β_ξ ∝ 4Γ, hence α = β_ξ/2."},
- ]},{t_zh:"Itô 修正的推导（2,2,1 框架）",t_en:"Derivation of Itô Correction (2,2,1 Framework)",cl:"#db2777",it:[
-  {l_zh:"因子 2 的来源",l_en:"Origin of Factor 2",
-   eq:"\\Delta\\varepsilon=\\ln(1+\\xi)\\approx\\xi-\\tfrac{\\xi^2}{2}\\;\\Rightarrow\\;A=\\alpha+\\tfrac{1}{2}\\beta_\\xi=\\frac{\\beta_\\xi}{2}+\\frac{\\beta_\\xi}{2}=\\beta_\\xi",
-   x_zh:"对数变换引入 Itô 修正。均值系数 A = α + β_ξ/2。代入 α = β_ξ/2，得 A = β_ξ。因此 ⟨μ̂⟩/μ_E = A/α = β_ξ/(β_ξ/2) = 2。回归估计量 μ̂ 的期望值 = 2μ_E。1/2 来自物理衰减 Γ，1/2 来自乘性噪声的 Itô 修正。",
-   x_en:"Log transform introduces Itô correction. Mean coefficient A = α + β_ξ/2. Substituting α = β_ξ/2 gives A = β_ξ. Thus ⟨μ̂⟩/μ_E = A/α = β_ξ/(β_ξ/2) = 2. Regression estimator ⟨μ̂⟩ = 2μ_E. Half from physical damping Γ, half from the multiplicative-noise Itô correction."},
-  {l_zh:"c₀ = 1",l_en:"c₀ = 1",
-   eq:"c_0=\\frac{B}{A}=\\frac{\\beta_\\xi}{\\beta_\\xi}=1,\\qquad\\mathrm{Var}(\\hat\\mu)=\\frac{2\\mu_E}{L}",
-   x_zh:"方差系数 B = β_ξ（对数变换不改变领阶方差）。c₀ = B/A = β_ξ/β_ξ = 1。2 和 1 都是精确结构常数，由 FDR-II 的 α = β_ξ/2 + 双线性耦合代数完全确定。不假设 C_F(τ) 的函数形式，不需要热平衡，不用 ad hoc 闭合。",
-   x_en:"Variance coefficient B = β_ξ (log transform preserves leading-order variance). c₀ = B/A = β_ξ/β_ξ = 1. Both 2 and 1 are exact structural constants, fully determined by FDR-II's α = β_ξ/2 + bilinear coupling algebra. No assumption on C_F(τ) form, no thermal equilibrium, no ad hoc closure."},
+ ss:[{t_zh:"Itô 修正的结果",t_en:"Itô Correction Results",cl:"#db2777",it:[
+  {l_zh:"⟨μ̂⟩ = 2μ_E（因子 2 的来源）",l_en:"⟨μ̂⟩ = 2μ_E (Origin of factor 2)",
+   x_zh:"基于 ln E 回归的估计量 μ̂ 的期望值 = 2μ_E：1/2 来自物理衰减 Γ，1/2 来自乘性噪声在对数变换下的 Itô 修正。因子 2 由 FDR-II 的结构代数唯一确定，不依赖力自相关的函数形式。完整推导见 SI §S6.A–B Eq.S.200–215。",
+   x_en:"The ln E regression estimator μ̂ has expectation 2μ_E: half from physical damping Γ, half from the Itô correction of multiplicative noise under log transform. The factor of 2 is uniquely fixed by FDR-II structural algebra, independent of force autocorrelation form. Full derivation in SI §S6.A–B Eq.S.200–215."},
+  {l_zh:"c₀ = 1（方差结构常数）",l_en:"c₀ = 1 (Variance structural constant)",
+   eq:"\\mathrm{Var}(\\hat\\mu)=\\frac{c_0\\,\\mu_{\\mathrm{svf}}}{L},\\qquad c_0=1",
+   x_zh:"c₀ = 1 同样由 FDR-II 代数完全确定。2 和 1 都是精确结构常数——不假设力自相关的函数形式，不需要热平衡，不用 ad hoc 闭合。",
+   x_en:"c₀ = 1 is likewise fully determined by FDR-II algebra. Both 2 and 1 are exact structural constants — no assumption on force autocorrelation form, no thermal equilibrium, no ad hoc closure."},
  ]},{t_zh:"历史影响",t_en:"Historical Impact",cl:"#dc2626",it:[
   {l_zh:"卫星估计量的 Itô 偏差",l_en:"Itô Bias in Satellite Estimators",
    x_zh:"Snodgrass (1966) 到 Stopa (2016) 的所有基于 ln E 回归的卫星估计量，其 SVF 贡献部分测量的是 2μ_E 而非 μ_E——一半来自物理衰减 Γ，一半来自乘性噪声的 Itô 修正。总观测 log-slope 为 2μ_E + μ_v（Dore 层流粘性贡献 ~13–21%）。60 年来第一次指出此系统因子。",
