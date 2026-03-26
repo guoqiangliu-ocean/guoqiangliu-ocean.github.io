@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stochastic Force Vector Analogy</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+        .panel {
+            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e6ed;
+            background: #fafbfc;
+            position: relative;
+        }
+        .header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ccc;
+            margin-bottom: 15px;
+        }
+        h3 {
+            margin: 0;
+            color: #34495e;
+            font-size: 1.3em;
+            text-align: left;
+            padding-left: 10px;
+        }
+        .math-desc {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.9em;
+            color: #c0392b;
+            background: #fdf2e9;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .math-desc.swell {
+            color: #8e44ad;
+            background: #f4ecf8;
+        }
+        canvas {
+            background-color: #ffffff;
+            border: 1px solid #dcdde1;
+            border-radius: 6px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            display: block;
+            margin: 0 auto;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1em;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        button:hover {
+            background-color: #34495e;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        #recordBtn.recording {
+            background-color: #e74c3c;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="title">Visualizing the Stochastic Force Vectors</div>
+    <div class="subtitle">Random forces (magnitude &amp; direction) emerge strictly upon microscopic contact.</div>
+
+    <div class="panel" style="border-left: 6px solid #e67e22;">
+        <div class="header-box">
+            <h3>1. Brownian Motion (Thermal Impacts)</h3>
+            <div class="math-desc">Collision Force: ξ(t)</div>
+        </div>
+        <canvas id="brownianCanvas" width="1100" height="200"></canvas>
+    </div>
+
+    <div class="panel" style="border-left: 6px solid #3498db;">
+        <div class="header-box">
+            <h3>2. Ocean Swell Packet (Wave-Eddy Interactions)</h3>
+            <div class="math-desc swell">Stochastic Vortex Force: u<sub>φ</sub> × ω'  →  F<sub>k</sub>(t)</div>
+        </div>
+        <canvas id="swellCanvas" width="1100" height="300"></canvas>
+    </div>
+
+    <div class="controls">
+        <button onclick="resetSystem()">↻ Restore Energy / Reset</button>
+        <button id="recordBtn" onclick="toggleRecording()" class="">⏺ Start Recording</button>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // Utility for transient Vector Arrows
+    // ==========================================
+    class ForceVector {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.life = 1.0; 
+            this.angle = Math.random() * Math.PI * 2;
+            this.length = 15 + Math.random() * 35; 
+            this.vx = Math.cos(this.angle) * 0.5;
+            this.vy = Math.sin(this.angle) * 0.5;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.life -= 0.08;
+        }
+        draw(ctx) {
+            if (this.life <= 0) return;
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, this.life);
+            ctx.strokeStyle = this.color;
+            ctx.fillStyle = this.color;
+            ctx.lineWidth = 2.5;
+
+            let endX = this.x + Math.cos(this.angle) * this.length;
+            let endY = this.y + Math.sin(this.angle) * this.length;
+
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+
+            let headlen = 8;
+            ctx.beginPath();
+            ctx.moveTo(endX, endY);
+            ctx.lineTo(endX - headlen * Math.cos(this.angle - Math.PI / 6), endY - headlen * Math.sin(this.angle - Math.PI / 6));
+            ctx.lineTo(endX - headlen * Math.cos(this.angle + Math.PI / 6), endY - headlen * Math.sin(this.angle + Math.PI / 6));
+            ctx.lineTo(endX, endY);
+            ctx.fill();
+
+            ctx.restore();
+        }
+    }
+
+    // ==========================================
+    // 1. Brownian Motion
+    // ==========================================
+    const canvasB = document.getElementById('brownianCanvas');
+    const ctxB = canvasB.getContext('2d');
+    let molecules = [];
+    let macroVelocity = { vx: 200, vy: 0 }; 
+    const particleCenter = { x: 550, y: 100 };
+    let bForces = [];
+
+    function initBrownian() {
+        macroVelocity = { vx: 200, vy: -30 }; 
+        molecules = [];
+        bForces = [];
+        for(let i = 0; i < 200; i++) {
+            molecules.push({
+                x: Math.random() * 1100,
+                y: Math.random() * 200,
+                vx: (Math.random() - 0.5) * 12,
+                vy: (Math.random() - 0.5) * 12,
+                radius: 3
+            });
+        }
+    }
+
+    function drawBrownian() {
+        ctxB.clearRect(0, 0, 1100, 200);
+        ctxB.fillStyle = '#bdc3c7';
+        molecules.forEach(m => {
+            m.x += m.vx; m.y += m.vy;
+            if(m.x < 0 || m.x > 1100) m.vx *= -1;
+            if(m.y < 0 || m.y > 200) m.vy *= -1;
+            
+            let dx = m.x - particleCenter.x;
+            let dy = m.y - particleCenter.y;
+            if(Math.sqrt(dx*dx + dy*dy) < 35) { 
+                m.vx *= -1; m.vy *= -1; 
+                macroVelocity.vx = macroVelocity.vx * 0.995 + (Math.random() - 0.5) * 2;
+                macroVelocity.vy = macroVelocity.vy * 0.995 + (Math.random() - 0.5) * 2;
+                bForces.push(new ForceVector(m.x, m.y, "#e74c3c"));
+            }
+            ctxB.beginPath();
+            ctxB.arc(m.x, m.y, m.radius, 0, Math.PI*2);
+            ctxB.fill();
+        });
+
+        for(let i = bForces.length - 1; i >= 0; i--) {
+            bForces[i].update();
+            bForces[i].draw(ctxB);
+            if(bForces[i].life <= 0) bForces.splice(i, 1);
+        }
+
+        let jiggleX = particleCenter.x + (Math.random() - 0.5) * 2;
+        let jiggleY = particleCenter.y + (Math.random() - 0.5) * 2;
+
+        ctxB.fillStyle = '#e67e22';
+        ctxB.beginPath();
+        ctxB.arc(jiggleX, jiggleY, 30, 0, Math.PI*2);
+        ctxB.fill();
+        ctxB.strokeStyle = '#d35400';
+        ctxB.lineWidth = 4;
+        ctxB.stroke();
+
+        let vLen = Math.sqrt(macroVelocity.vx**2 + macroVelocity.vy**2);
+        if (vLen > 2) {
+            ctxB.beginPath();
+            ctxB.moveTo(jiggleX, jiggleY);
+            ctxB.lineTo(jiggleX + macroVelocity.vx, jiggleY + macroVelocity.vy);
+            ctxB.strokeStyle = '#c0392b';
+            ctxB.lineWidth = 4;
+            ctxB.stroke();
+        }
+    }
+
+    // ==========================================
+    // 2. Ocean Swell 
+    // ==========================================
+    const canvasS = document.getElementById('swellCanvas');
+    const ctxS = canvasS.getContext('2d');
+    let packetEnergy = 100;   
+    const packetCenter = 400; 
+    const wavenumber_k = 0.12; 
+    const interfaceY = 120;
+    
+    let oceanEddies = [];
+    let sForces = [];
+    let lastEddyX = 0;
+    const EDDY_RADIUS = 22; 
+
+    function initSwell() {
+        packetEnergy = 100; 
+        oceanEddies = [];
+        sForces = [];
+        lastEddyX = -50;
+        while(lastEddyX < 1300) {
+            spawnEddy(lastEddyX);
+        }
+    }
+
+    function spawnEddy(startX) {
+        let spacing = EDDY_RADIUS * 1.8 + Math.random() * 5; 
+        let mainX = startX + spacing;
+
+        // 1. 生成主涡流 (Main Eddy)
+        oceanEddies.push({
+            x: mainX,
+            y: interfaceY + EDDY_RADIUS + 8 + (Math.random() - 0.5) * 6, 
+            radius: EDDY_RADIUS,
+            angle: Math.random() * Math.PI * 2,
+            spinSpeed: (Math.random() - 0.5) * 0.1,
+            flowSpeed: 2.5,
+            type: 'main' // 类型：主涡流
+        });
+
+        // 2. 生成小型次级涡流 (Small Secondary Eddies)
+        let numSmall = Math.floor(Math.random() * 3) + 1;
+        for (let j = 0; j < numSmall; j++) {
+            let r = 5 + Math.random() * 10;
+            oceanEddies.push({
+                x: mainX + (Math.random() - 0.5) * 50,
+                y: interfaceY + 20 + Math.random() * 40,
+                radius: r,
+                angle: Math.random() * Math.PI * 2,
+                spinSpeed: (Math.random() - 0.5) * 0.18,
+                flowSpeed: 2.2 + Math.random() * 0.6,
+                type: 'small' // 类型：小型涡流
+            });
+        }
+
+        // 3. 有一定概率生成大型背景涡流 (Large Faint Eddies)
+        if (Math.random() < 0.6) { // 60%的概率在主涡流附近伴生一个大涡流
+            let rLarge = 28 + Math.random() * 20; // 半径在 28 到 48 之间
+            oceanEddies.push({
+                x: mainX + (Math.random() - 0.5) * 70,
+                y: interfaceY + rLarge + 15 + Math.random() * 30, // 位置更深，以免露出水面太突兀
+                radius: rLarge,
+                angle: Math.random() * Math.PI * 2,
+                spinSpeed: (Math.random() - 0.5) * 0.05, // 大块头转得慢
+                flowSpeed: 2.0 + Math.random() * 0.3, // 大块头漂得稍微慢一点
+                type: 'large' // 类型：大型涡流
+            });
+        }
+
+        lastEddyX = mainX;
+    }
+
+    function drawSwell() {
+        ctxS.clearRect(0, 0, 1100, 300);
+
+        // 绘制海平面基准线
+        ctxS.beginPath();
+        ctxS.moveTo(0, interfaceY);
+        ctxS.lineTo(1100, interfaceY);
+        ctxS.strokeStyle = '#bdc3c7';
+        ctxS.lineWidth = 1;
+        ctxS.setLineDash([5, 5]);
+        ctxS.stroke();
+        ctxS.setLineDash([]);
+
+        ctxS.lineWidth = 2;
+        let maxEddyX = -Infinity; 
+
+        for (let i = oceanEddies.length - 1; i >= 0; i--) {
+            let eddy = oceanEddies[i];
+            eddy.x -= eddy.flowSpeed; 
+            eddy.angle += eddy.spinSpeed;
+
+            if (eddy.x > maxEddyX) maxEddyX = eddy.x;
+
+            let horizDist = Math.abs(eddy.x - packetCenter);
+            let isUnderWave = horizDist < 100; 
+            
+            // 根据涡流类型设置颜色和交互逻辑
+            if (isUnderWave) {
+                if (eddy.type === 'main') {
+                    ctxS.strokeStyle = 'rgba(231, 76, 60, 0.8)'; // 主涡流：高亮红
+                    if (packetEnergy > 8) packetEnergy -= 0.003; 
+                    if(Math.random() < 0.12) sForces.push(new ForceVector(eddy.x, eddy.y - eddy.radius, "#8e44ad"));
+                } else if (eddy.type === 'large') {
+                    ctxS.strokeStyle = 'rgba(231, 76, 60, 0.15)'; // 大型涡流：极淡红
+                    if (packetEnergy > 8) packetEnergy -= 0.002; 
+                    if(Math.random() < 0.05) sForces.push(new ForceVector(eddy.x, eddy.y - eddy.radius, "#9b59b6"));
+                } else { // 'small'
+                    ctxS.strokeStyle = 'rgba(231, 76, 60, 0.3)'; // 小型涡流：淡红
+                    if (packetEnergy > 8) packetEnergy -= 0.001; 
+                    if(Math.random() < 0.03) sForces.push(new ForceVector(eddy.x, eddy.y - eddy.radius, "#9b59b6"));
+                }
+            } else {
+                if (eddy.type === 'main') {
+                    ctxS.strokeStyle = 'rgba(52, 152, 219, 0.6)'; // 主涡流：正常蓝
+                } else if (eddy.type === 'large') {
+                    ctxS.strokeStyle = 'rgba(52, 152, 219, 0.15)'; // 大型涡流：极淡蓝
+                } else { // 'small'
+                    ctxS.strokeStyle = 'rgba(52, 152, 219, 0.2)'; // 小型涡流：淡蓝
+                }
+            }
+
+            // 绘制涡流圆圈
+            ctxS.beginPath();
+            ctxS.arc(eddy.x, eddy.y, eddy.radius, 0, Math.PI*2);
+            ctxS.stroke();
+            
+            // 绘制涡流内部指针
+            ctxS.beginPath();
+            ctxS.moveTo(eddy.x, eddy.y);
+            ctxS.lineTo(eddy.x + Math.cos(eddy.angle)*eddy.radius, eddy.y + Math.sin(eddy.angle)*eddy.radius);
+            ctxS.stroke();
+
+            // 超出屏幕左侧即删除
+            if (eddy.x < -60) oceanEddies.splice(i, 1);
+        }
+        
+        // 动态补充右侧涡流
+        if (maxEddyX < 1200) spawnEddy(maxEddyX);
+
+        // 绘制受力向量
+        for(let i = sForces.length - 1; i >= 0; i--) {
+            sForces[i].update();
+            sForces[i].draw(ctxS);
+            if(sForces[i].life <= 0) sForces.splice(i, 1);
+        }
+
+        // 绘制波浪
+        ctxS.beginPath();
+        ctxS.strokeStyle = '#2980b9';
+        ctxS.lineWidth = 3;
+        let phaseShift = Date.now() / 150; 
+
+        for(let x = 0; x <= 1100; x += 3) {
+            let envelope = Math.exp(-Math.pow(x - packetCenter, 2) / 18000); 
+            let carrier = Math.cos(wavenumber_k * x - phaseShift); 
+            let y = interfaceY - (envelope * carrier * packetEnergy);
+            if(x === 0) ctxS.moveTo(x, y);
+            else ctxS.lineTo(x, y);
+        }
+        ctxS.stroke();
+        
+        ctxS.lineTo(1100, 300);
+        ctxS.lineTo(0, 300);
+        ctxS.fillStyle = 'rgba(41, 128, 185, 0.08)';
+        ctxS.fill();
+    }
+
+    // ==========================================
+    // Video Recording Logic
+    // ==========================================
+    const combineCanvas = document.createElement('canvas');
+    combineCanvas.width = 1100;
+    combineCanvas.height = 500; 
+    const combineCtx = combineCanvas.getContext('2d');
+    
+    let mediaRecorder;
+    let recordedChunks = [];
+    let isRecording = false;
+
+    function toggleRecording() {
+        const btn = document.getElementById('recordBtn');
+        if (!isRecording) {
+            startRecording();
+            btn.innerHTML = "&#x25A0; Stop & Download Video";
+            btn.classList.add('recording');
+        } else {
+            stopRecording();
+            btn.innerHTML = "&#x23FA; Start Recording";
+            btn.classList.remove('recording');
+        }
+        isRecording = !isRecording;
+    }
+
+    function startRecording() {
+        recordedChunks = [];
+        const stream = combineCanvas.captureStream(30); 
+        
+        let options = { mimeType: 'video/webm; codecs=vp9' };
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+            options = { mimeType: 'video/webm' };
+        }
+        
+        try {
+            mediaRecorder = new MediaRecorder(stream, options);
+        } catch (e) {
+            mediaRecorder = new MediaRecorder(stream); 
+        }
+
+        mediaRecorder.ondataavailable = function(event) {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+
+        mediaRecorder.onstop = function() {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            document.body.appendChild(a);
+            a.style = 'display: none';
+            a.href = url;
+            a.download = 'stochastic_forces_animation.webm';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        };
+
+        mediaRecorder.start();
+    }
+
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+        }
+    }
+
+    // ==========================================
+    // Main Loop
+    // ==========================================
+    function animate() {
+        drawBrownian();
+        drawSwell();
+
+        combineCtx.fillStyle = '#ffffff';
+        combineCtx.fillRect(0, 0, combineCanvas.width, combineCanvas.height);
+        combineCtx.drawImage(canvasB, 0, 0);
+        combineCtx.drawImage(canvasS, 0, 200);
+
+        requestAnimationFrame(animate);
+    }
+
+    function resetSystem() {
+        initBrownian();
+        initSwell();
+    }
+
+    initBrownian();
+    initSwell();
+    animate();
+</script>
+
+</body>
+</html>
