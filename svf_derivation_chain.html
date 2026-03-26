@@ -97,8 +97,8 @@ var lang = 'en';
 var CHAIN_ZH = ["NS","Helmholtz","涡力+能量","三层+SVF","MZ投影","GLE","FDR-II","GK+Bochner","Kolmogorov","力核积分","标度律","Itô修正","CLT分布","图4系综","图5单轨"];
 var CHAIN_EN = ["NS","Helmholtz","Vortex Force","3-Layer+SVF","MZ Proj.","GLE","FDR-II","GK+Bochner","Kolmogorov","Force Kernel","Scaling Law","Itô Corr.","CLT Dist.","Fig4 Ens.","Fig5 Path"];
 
-var STATS_ZH = [{n:"15",l:"主节点",c:"#2563eb"},{n:"6",l:"精确恒等式",c:"#1d4ed8"},{n:"3",l:"数学定理",c:"#059669"},{n:"6",l:"假设 A1–A6",c:"#d97706"},{n:"1",l:"经验输入",c:"#db2777"},{n:"0",l:"可调参数",c:"#dc2626"}];
-var STATS_EN = [{n:"15",l:"Main Nodes",c:"#2563eb"},{n:"6",l:"Exact Identities",c:"#1d4ed8"},{n:"3",l:"Theorems",c:"#059669"},{n:"6",l:"Assumptions",c:"#d97706"},{n:"1",l:"Empirical Input",c:"#db2777"},{n:"0",l:"Free Params",c:"#dc2626"}];
+var STATS_ZH = [{n:"15",l:"主节点",c:"#2563eb"},{n:"6",l:"精确恒等式",c:"#1d4ed8"},{n:"3",l:"数学定理",c:"#059669"},{n:"5",l:"假设 A1–A5",c:"#d97706"},{n:"1",l:"经验输入",c:"#db2777"},{n:"0",l:"可调参数",c:"#dc2626"}];
+var STATS_EN = [{n:"15",l:"Main Nodes",c:"#2563eb"},{n:"6",l:"Exact Identities",c:"#1d4ed8"},{n:"3",l:"Theorems",c:"#059669"},{n:"5",l:"Assumptions A1–A5",c:"#d97706"},{n:"1",l:"Empirical Input",c:"#db2777"},{n:"0",l:"Free Params",c:"#dc2626"}];
 
 var LEG_ZH = [["t-id","恒等式"],["t-th","定理"],["t-as","假设"],["t-in","经验输入"],["t-re","结果"]];
 var LEG_EN = [["t-id","Identity"],["t-th","Theorem"],["t-as","Assumption"],["t-in","Empirical"],["t-re","Result"]];
@@ -220,7 +220,7 @@ var NODES = [
  t_zh:"广义 Langevin 方程 (GLE)",t_en:"Generalised Langevin Equation (GLE)",si:"SI §S2.E–F",
  st_zh:"da_k/dt = iω a_k − ∫K a_k ds + F_k(t) · 乘性噪声",
  st_en:"da_k/dt = iω a_k − ∫K a_k ds + F_k(t) · Multiplicative noise",
- tg:[["t-id","MZ 精确输出","MZ Exact Output"]],
+ tg:[["t-re","MZ 精确输出","MZ Exact Output"]],
  ss:[{t_zh:"GLE 与乘性噪声",t_en:"GLE and Multiplicative Noise",cl:"#7c3aed",it:[
   {l_zh:"三项结构",l_en:"Three-Term Structure",
    eq:"\\frac{da_k}{dt}=i\\omega_k a_k-\\int_0^t K_k(t-s)\\,a_k(s)\\,ds+F_k(t)",
@@ -235,7 +235,7 @@ var NODES = [
  t_zh:"FDR-II（第二涨落-耗散关系）",t_en:"FDR-II (Second Fluctuation-Dissipation Relation)",si:"SI §S2.C Eq.S.50",
  st_zh:"K_k(τ) = ⟨F(0)F*(τ)⟩ / 2E_k · 不要求热平衡",
  st_en:"K_k(τ) = ⟨F(0)F*(τ)⟩ / 2E_k · No thermal equilibrium required",
- tg:[["t-th","精确关系","Exact"],["t-as","A3, A5","A3, A5"]],
+ tg:[["t-id","精确关系","Exact"],["t-as","A3","A3"]],
  ss:[{t_zh:"FDR-II 的证明",t_en:"Proof of FDR-II",cl:"#059669",it:[
   {l_zh:"公式",l_en:"Formula",
    eq:"K_{\\boldsymbol{k}}(\\tau)=\\frac{\\langle F_{\\boldsymbol{k}}(0)\\,F_{\\boldsymbol{k}}^*(\\tau)\\rangle}{\\langle|a_{\\boldsymbol{k}}|^2\\rangle}",
@@ -286,6 +286,11 @@ var NODES = [
   {l_zh:"适用性：各向异性分层湍流",l_en:"Validity: Anisotropic Stratified Turbulence",
    x_zh:"涌浪选择的尺度 q ~ k ~ 0.01–0.03 rad/m（逆波数 ~30–80 m）落在各向异性分层湍流区间。理论只需要水平涡度谱遵循 -5/3——不需要各向同性。Kunze (2019)、Klymak & Moum (2007) 支持。",
    x_en:"Swell-selected scales q ~ k ~ 0.01–0.03 rad/m (inverse wavenumbers ~30–80 m) lie in the anisotropic stratified regime. Theory only requires horizontal vorticity spectrum to follow -5/3 — isotropy not needed. Supported by Kunze (2019), Klymak & Moum (2007)."},
+ ]},{t_zh:"假设 A5",t_en:"Assumption A5",cl:"#d97706",it:[
+  {l_zh:"A5 (惯性子区谱形式)",l_en:"A5 (Inertial-Subrange Spectral Form)",
+   x_zh:"在涌浪选择的波数区间 q ~ k 内，水平涡度谱遵循 Kolmogorov −5/3 幂律。这是理论的唯一经验输入——不是拟合涌浪数据，而是由六十年独立湍流实验（大气、海洋、实验室）确定的普适标度。不要求完全各向同性，仅要求水平分量的谱斜率。适用范围由局部 Ozmidov 尺度 L_O = (ε/N³)^{1/2} 和 Kolmogorov 尺度 η_K = (ν³/ε)^{1/4} 界定。",
+   x_en:"Within the swell-selected wavenumber band q ~ k, the horizontal vorticity spectrum follows the Kolmogorov −5/3 power law. This is the theory's sole empirical input — not fitted to swell data, but established by six decades of independent turbulence experiments (atmosphere, ocean, laboratory). Full isotropy is not required; only the spectral slope of the horizontal component. Validity bounded by the local Ozmidov scale L_O = (ε/N³)^{1/2} and Kolmogorov scale η_K = (ν³/ε)^{1/4}.",
+   warn:true},
  ]}]},
 
 {id:"fk",n:"10",cl:"#d97706",
@@ -329,7 +334,7 @@ var NODES = [
  t_zh:"Itô 修正（2,2,1 结构常数）",t_en:"Itô Correction (2,2,1 Structural Constants)",si:"SI §S6.A–B Eq.S.200–215",
  st_zh:"⟨μ̂⟩ = 2μ_E · Var(μ̂) = 2μ_E/L · c₀ = 1",
  st_en:"⟨μ̂⟩ = 2μ_E · Var(μ̂) = 2μ_E/L · c₀ = 1",
- tg:[["t-th","精确常数","Exact Constants"],["t-re","观测修正","Obs. Correction"]],
+ tg:[["t-re","精确常数","Exact Constants"],["t-re","观测修正","Obs. Correction"]],
  ss:[{t_zh:"遭遇级随机动力学",t_en:"Encounter-Level Stochastic Dynamics",cl:"#db2777",it:[
   {l_zh:"能量增量的均值与方差",l_en:"Mean and Variance of Energy Increment",
    x_zh:"ξ = ΔE/E：⟨ξ⟩ = −αδ²（衰减），Var(ξ) = β_ξ δ²（涨落）。FDR-II 精确锁定 α/β_ξ = 1/2——不依赖 δ、ℓ_corr 或 C_F(τ) 的具体函数形式。关键代数：FDR-II 给出 Γ = I_F/(2E_k)，导致 α ∝ 2Γ，β_ξ ∝ 4Γ，故 α = β_ξ/2。",
