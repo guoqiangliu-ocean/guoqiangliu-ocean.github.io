@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVF Theory — Derivation Architecture</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<style>
+:root {
+  --bg: #fafbfc; --card: #ffffff; --card-hover: #f8f9fb;
+  --border: #e2e8f0; --border2: #cbd5e1;
+  --text: #1e293b; --text2: #475569; --text3: #94a3b8;
+  --accent: #2563eb; --accent2: #7c3aed; --green: #059669;
+  --amber: #d97706; --pink: #db2777; --red: #dc2626;
+  --eq-bg: #f1f5f9; --eq-border: #cbd5e1;
+  --note-bg: #eff6ff; --note-border: #93c5fd;
+  --warn-bg: #fffbeb; --warn-border: #fcd34d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Source Han Sans SC','Noto Sans SC','Helvetica Neue',system-ui,sans-serif;line-height:1.75;font-size:14px}
+.hdr{text-align:center;padding:48px 20px 32px;border-bottom:1px solid var(--border);background:#fff}
+.hdr h1{font-size:1.7em;font-weight:800;color:var(--text);margin-bottom:6px}
+.hdr .sub{font-size:.92em;color:var(--text2);max-width:640px;margin:0 auto 16px}
+.lang-btn{position:absolute;top:16px;right:20px;padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text2);cursor:pointer;font-size:12px;font-weight:600;transition:all .2s}
+.lang-btn:hover{border-color:var(--accent);color:var(--accent)}
+.chain{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;font-size:11px;font-family:'SF Mono',Consolas,monospace}
+.chain span{padding:2px 7px;border-radius:4px;cursor:pointer;transition:all .15s}
+.chain .c-node{background:#f1f5f9;border:1px solid #e2e8f0;color:var(--text2)}
+.chain .c-node:hover{background:#dbeafe;border-color:#93c5fd;color:var(--accent)}
+.chain .c-arr{color:#cbd5e1;border:none;background:none}
+.main{max-width:880px;margin:0 auto;padding:28px 16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin-bottom:20px}
+.stat{text-align:center;padding:12px 8px;background:#fff;border:1px solid var(--border);border-radius:8px}
+.stat-n{font-family:'SF Mono',Consolas,monospace;font-size:1.6em;font-weight:800}
+.stat-l{font-size:10.5px;color:var(--text2);margin-top:2px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:12px;margin-bottom:22px;background:#fff;border-radius:8px;border:1px solid var(--border)}
+.tag{font-size:10.5px;padding:2px 8px;border-radius:999px;font-family:'SF Mono',Consolas,monospace;white-space:nowrap;font-weight:500}
+.t-id{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd}
+.t-th{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+.t-as{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+.t-in{background:#fce7f3;color:#9d174d;border:1px solid #f9a8d4}
+.t-re{background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd}
+.node{margin-bottom:2px;position:relative}
+.node::before{content:'';position:absolute;left:23px;top:52px;bottom:-2px;width:2px;background:var(--border)}
+.node:last-child::before{display:none}
+.n-hdr{display:flex;align-items:center;gap:12px;padding:11px 16px;background:#fff;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;position:relative;z-index:1}
+.n-hdr:hover{border-color:var(--border2);box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.n-hdr.open{border-radius:10px 10px 0 0;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.n-num{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'SF Mono',Consolas,monospace;font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
+.n-title{font-weight:700;font-size:14px;margin-bottom:1px}
+.n-sub{font-size:11.5px;color:var(--text2);font-family:'SF Mono',Consolas,monospace}
+.n-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.chev{font-size:12px;color:var(--text3);transition:transform .25s;flex-shrink:0}
+.chev.open{transform:rotate(180deg)}
+.n-body{display:none;background:#fff;border:1px solid var(--border2);border-top:none;border-radius:0 0 10px 10px;padding:16px 20px}
+.n-body.open{display:block}
+.ss-hdr{padding:8px 12px;border-radius:6px;cursor:pointer;border:1px solid transparent;transition:all .15s;margin-bottom:2px}
+.ss-hdr:hover{background:#f8fafc;border-color:#e2e8f0}
+.ss-hdr.open{background:#f1f5f9;border-color:#cbd5e1}
+.ss-title{font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px}
+.ss-bar{width:3px;height:13px;border-radius:2px;flex-shrink:0}
+.ss-chev{margin-left:auto;font-size:9px;color:var(--text3);transition:transform .2s}
+.ss-chev.open{transform:rotate(180deg)}
+.ss-body{padding:4px 4px 4px 20px;margin-left:13px;border-left:2px solid #e2e8f0}
+.si-hdr{padding:6px 10px;border-radius:5px;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:7px}
+.si-hdr:hover{background:#f8fafc}
+.si-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.si-label{font-weight:600;font-size:12.5px;color:var(--text)}
+.si-chev{margin-left:auto;font-size:9px;color:var(--text3);transition:transform .2s}
+.si-chev.open{transform:rotate(90deg)}
+.si-body{padding:6px 10px 8px 22px;font-size:12.5px;color:var(--text2);line-height:1.8;margin-left:2px;border-left:2px solid #f1f5f9}
+.eq-block{background:var(--eq-bg);border-left:3px solid var(--accent);padding:8px 14px;border-radius:0 6px 6px 0;margin:6px 0;overflow-x:auto}
+.note-block{background:var(--note-bg);border-left:3px solid var(--note-border);padding:7px 12px;border-radius:0 6px 6px 0;margin:6px 0;font-size:12px}
+.warn-block{background:var(--warn-bg);border-left:3px solid var(--warn-border);padding:7px 12px;border-radius:0 6px 6px 0;margin:6px 0;font-size:12px}
+.conn{text-align:center;padding:2px 0;position:relative;z-index:1}
+.conn-line{width:2px;height:18px;margin:0 auto;border-radius:1px}
+@media(max-width:640px){.hdr h1{font-size:1.3em}.n-hdr{padding:8px 10px;gap:8px}.n-num{width:34px;height:34px;font-size:11px}}
+</style>
+</head>
+<body>
+<div class="hdr" style="position:relative">
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()">中 / EN</button>
+  <h1 id="mainTitle">SVF Theory · 完整推导架构</h1>
+  <div class="sub" id="mainSub">从 Navier–Stokes 方程到涌浪衰减标度律的完整推导链 · 15 节点 · 三级展开 · 点击探索</div>
+  <div class="chain" id="chainBar"></div>
+</div>
+<div class="main">
+  <div class="stats" id="statsBar"></div>
+  <div class="legend" id="legendBar"></div>
+  <div id="flow"></div>
+</div>
+
+<script>
+var lang = 'en';
+
+var CHAIN_ZH = ["NS","Helmholtz","涡力+能量","三层+SVF","MZ投影","GLE","FDR-II","GK+Bochner","Kolmogorov","力核积分","标度律","Itô修正","CLT分布","图4系综","图5单轨"];
+var CHAIN_EN = ["NS","Helmholtz","Vortex Force","3-Layer+SVF","MZ Proj.","GLE","FDR-II","GK+Bochner","Kolmogorov","Force Kernel","Scaling Law","Itô Corr.","CLT Dist.","Fig4 Ens.","Fig5 Path"];
+
+var STATS_ZH = [{n:"15",l:"主节点",c:"#2563eb"},{n:"6",l:"精确恒等式",c:"#1d4ed8"},{n:"3",l:"数学定理",c:"#059669"},{n:"6",l:"假设 A1–A6",c:"#d97706"},{n:"1",l:"经验输入",c:"#db2777"},{n:"0",l:"可调参数",c:"#dc2626"}];
+var STATS_EN = [{n:"15",l:"Main Nodes",c:"#2563eb"},{n:"6",l:"Exact Identities",c:"#1d4ed8"},{n:"3",l:"Theorems",c:"#059669"},{n:"6",l:"Assumptions",c:"#d97706"},{n:"1",l:"Empirical Input",c:"#db2777"},{n:"0",l:"Free Params",c:"#dc2626"}];
+
+var LEG_ZH = [["t-id","恒等式"],["t-th","定理"],["t-as","假设"],["t-in","经验输入"],["t-re","结果"]];
+var LEG_EN = [["t-id","Identity"],["t-th","Theorem"],["t-as","Assumption"],["t-in","Empirical"],["t-re","Result"]];
+
+var NODES = [
+{id:"ns",n:"01",cl:"#2563eb",
+ t_zh:"Navier–Stokes 方程",t_en:"Navier–Stokes Equations",si:"SI §S1.A",
+ st_zh:"不可压缩 NS · Boussinesq 近似 · 精确起点",
+ st_en:"Incompressible NS · Boussinesq · Exact starting point",
+ tg:[["t-id","精确方程","Exact Eqn"]],
+ ss:[{t_zh:"精确方程",t_en:"Exact Equations",cl:"#2563eb",it:[
+  {l_zh:"NS方程",l_en:"NS Equations",
+   eq:"\\partial_t \\boldsymbol{U}+(\\boldsymbol{U}\\cdot\\nabla)\\boldsymbol{U}=-\\frac{1}{\\rho}\\nabla P+\\nu\\nabla^2\\boldsymbol{U},\\quad \\nabla\\cdot\\boldsymbol{U}=0",
+   x_zh:"不可压缩 Newtonian 流体，常密度 ρ，运动粘性 ν。这是唯一的起点，后续所有推导均从此出发。",
+   x_en:"Incompressible Newtonian fluid, constant density ρ, kinematic viscosity ν. This is the sole starting point; everything follows from here."},
+  {l_zh:"为什么必须从 NS 出发",l_en:"Why start from NS",
+   x_zh:"经典 CL 理论从已分解的波动方程出发，在相位平均过程中丢弃了产生不可逆耗散的分量 u_φ × ω'。SVF 理论必须从未分解的 NS 方程出发，才能捕获此关键项。",
+   x_en:"Classical CL theory starts from decomposed wave equations, discarding the component u_φ × ω' during phase averaging. SVF theory must start from the unsplit NS to capture this crucial term."},
+  {l_zh:"适用条件",l_en:"Validity",
+   x_zh:"深水 kh ≫ 1；不可压缩 Ma ≪ 1；Boussinesq 近似。对海洋混合层完全成立。",
+   x_en:"Deep water kh ≫ 1; incompressible Ma ≪ 1; Boussinesq approximation. Fully valid for the ocean mixed layer."},
+ ]}]},
+
+{id:"hlm",n:"02",cl:"#2563eb",
+ t_zh:"Helmholtz 分解",t_en:"Helmholtz Decomposition",si:"SI §S1.A Eq.S.2",
+ st_zh:"U = u_φ + u_ψ · 无旋（波）+ 有旋（流）",
+ st_en:"U = u_φ + u_ψ · Irrotational (wave) + Rotational (flow)",
+ tg:[["t-id","精确分解","Exact"]],
+ ss:[{t_zh:"数学结构",t_en:"Mathematical Structure",cl:"#2563eb",it:[
+  {l_zh:"分解定义",l_en:"Definition",
+   eq:"\\boldsymbol{U}=\\underbrace{\\nabla\\phi}_{\\boldsymbol{u}_\\phi\\text{ (wave)}}+\\underbrace{\\nabla\\times\\boldsymbol{\\psi}}_{\\boldsymbol{u}_\\psi\\text{ (flow)}}",
+   x_zh:"精确数学恒等式。无旋分量承载波动，有旋分量承载涡度/湍流。",
+   x_en:"Exact mathematical identity. Irrotational part carries waves, rotational part carries vorticity/turbulence."},
+  {l_zh:"正交性与能量分解",l_en:"Orthogonality & Energy",
+   eq:"\\int \\boldsymbol{u}_\\phi\\cdot\\boldsymbol{u}_\\psi\\,dV=0,\\qquad E=\\tfrac{1}{2}\\int|\\boldsymbol{u}_\\phi|^2+\\tfrac{1}{2}\\int|\\boldsymbol{u}_\\psi|^2",
+   x_zh:"交叉项为零。波能与流能在数学上完全分离。",
+   x_en:"Cross-term vanishes. Wave and flow energies are mathematically decoupled."},
+ ]}]},
+
+{id:"vrt",n:"03",cl:"#2563eb",
+ t_zh:"轨道涡力 + 能量收支",t_en:"Orbital Vortex Force + Energy Budget",si:"SI §S1.B Eq.S.7–11",
+ st_zh:"f_v = u_φ × ω · NS 中波能变化的唯一非粘性通道",
+ st_en:"f_v = u_φ × ω · Sole non-viscous channel for wave energy in NS",
+ tg:[["t-id","精确推导","Exact"],["t-th","能量定理","Energy Thm"]],
+ ss:[{t_zh:"涡力形式的推导",t_en:"Vortex-Force Form",cl:"#2563eb",it:[
+  {l_zh:"向量恒等式 → 涡力方程",l_en:"Vector Identity → Vortex-Force Eqn",
+   eq:"\\partial_t\\boldsymbol{u}+(\\boldsymbol{u}\\cdot\\nabla)\\boldsymbol{u}=\\boldsymbol{u}_\\phi\\times\\boldsymbol{\\omega}-\\frac{1}{\\rho}\\nabla\\Pi+\\nu\\nabla^2\\boldsymbol{u}",
+   x_zh:"利用 A·∇B + B·∇A 展开，结合 ∇×u_φ = 0，吸收梯度项到修正压力 Π。耦合以精确的涡力 u_φ × ω 出现。",
+   x_en:"Expanding via vector identity, using curl u_φ = 0, absorbing gradients into modified pressure Π. Coupling appears as exact vortex force."},
+ ]},{t_zh:"能量收支定理 (Eq.S.11)",t_en:"Energy Budget Theorem (Eq.S.11)",cl:"#059669",it:[
+  {l_zh:"精确结果",l_en:"Exact Result",
+   eq:"\\frac{d}{dt}\\int\\tfrac{1}{2}\\rho|\\boldsymbol{u}|^2\\,dV=\\rho\\!\\int\\boldsymbol{u}\\cdot(\\boldsymbol{u}_\\phi\\times\\boldsymbol{\\omega})\\,dV-\\rho\\nu\\!\\int|\\nabla\\boldsymbol{u}|^2\\,dV",
+   x_zh:"压力项和自平流项因散度定理积分为零。u_φ × ω 是 NS 中波-流非粘性能量交换的唯一通道——这由精确计算证明，不是假设。",
+   x_en:"Pressure and self-advection terms vanish by divergence theorem. u_φ × ω is the sole non-viscous wave-flow energy exchange channel — proven exactly, not assumed."},
+  {l_zh:"粘性通道排除",l_en:"Viscous Channel Excluded",
+   x_zh:"分子粘性衰减率 μ_visc ~ 4νk³ ~ 10⁻¹¹ m⁻¹，比观测 ~10⁻⁷ 低 4 个量级（长周期涌浪可达 4.2 个量级）。",
+   x_en:"Molecular viscous rate μ_visc ~ 4νk³ ~ 10⁻¹¹ m⁻¹, four orders of magnitude below observations ~10⁻⁷ (up to 4.2 orders for long-period swell)."},
+ ]}]},
+
+{id:"3ly",n:"04",cl:"#2563eb",
+ t_zh:"三层涡度分解 → CL + SVF",t_en:"Three-Layer Vorticity → CL + SVF",si:"SI §S1.C–E Eq.S.24–44",
+ st_zh:"ω = Ω̄ + ω' + ω_wave · 三通道排除 → SVF 为唯一不可逆通道",
+ st_en:"ω = Ω̄ + ω' + ω_wave · Three-channel exclusion → SVF is the sole irreversible channel",
+ tg:[["t-id","精确分解","Exact"],["t-as","A1–A2","A1–A2"]],
+ ss:[{t_zh:"McWilliams 三层分解",t_en:"McWilliams Three-Layer Decomposition",cl:"#2563eb",it:[
+  {l_zh:"三层结构",l_en:"Three Layers",
+   eq:"\\boldsymbol{\\omega}=\\bar{\\boldsymbol{\\Omega}}+\\boldsymbol{\\omega}'+\\boldsymbol{\\omega}_{\\mathrm{wave}}",
+   x_zh:"Ω̄ = 系综平均涡度；ω' = 湍流涡度涨落（⟨ω'⟩ = 0）；ω_wave = 波动奴役涡度（≈ ∇×(ξ×Ω_s)，无独立自由度）。两次平均操作：相位平均分离 ω_wave，系综平均分离 Ω̄ 和 ω'。",
+   x_en:"Ω̄ = ensemble-mean vorticity; ω' = turbulent fluctuation (⟨ω'⟩=0); ω_wave ≈ ∇×(ξ×Ω_s) wave-slaved, no independent DOF. Two averaging operations: phase average separates ω_wave; ensemble average separates Ω̄ and ω'."},
+ ]},{t_zh:"三通道排除 → SVF 唯一性",t_en:"Three-Channel Exclusion → SVF Uniqueness",cl:"#7c3aed",it:[
+  {l_zh:"Term I: u_φ × Ω̄ → 保守",l_en:"Term I: u_φ × Ω̄ → Conservative",
+   x_zh:"Ω̄ 无内部自由度（单一确定向量）。每个波周期的做功在下半周期精确返回。零净耗散（仅保守频移）。",
+   x_en:"Ω̄ has no internal DOF. Work done each half-cycle is exactly returned. Zero net dissipation (conservative frequency shift only)."},
+  {l_zh:"Term II: u_φ × ω_wave → 保守",l_en:"Term II: u_φ × ω_wave → Conservative",
+   x_zh:"ω_wave 被波奴役，无独立自由度。乘积仅在频率 0（= CL 力，修改平均流但不耗散波能）和 2ω（无法投影到涌浪模态）有谱支撑。对波振幅保守。",
+   x_en:"ω_wave is wave-slaved with no independent DOF. Product has spectral support at 0 (=CL force, modifies mean flow without damping waves) and 2ω (no projection onto swell mode). Conservative w.r.t. wave amplitude."},
+  {l_zh:"Term III: u_φ × ω' → 不可逆 ✓",l_en:"Term III: u_φ × ω' → Irreversible ✓",
+   x_zh:"ω' 拥有内部自由度（湍流级联的完整层次）——涡旋在一个波周期内将接收的能量重分配到更小尺度，擦除精确返回所需的相位信息。加上空间去相关（波包穿越独立湍流区域），这是唯一同时具备两个不可逆要素的分量。",
+   x_en:"ω' possesses internal DOF (full turbulent cascade) — eddies redistribute received energy to smaller scales within one wave period, erasing phase information needed for exact return. Combined with spatial decorrelation (wave packet traverses independent turbulent regions), this is the only component with both irreversibility ingredients.",
+   warn:true},
+  {l_zh:"SVF 定义 (Eq.S.37)",l_en:"SVF Definition (Eq.S.37)",
+   eq:"\\boldsymbol{f}_{\\mathrm{svf}}\\equiv\\boldsymbol{u}_\\phi\\times\\boldsymbol{\\omega}'",
+   x_zh:"相位平均为零（经典理论因此将其丢弃），但自相关非零。耗散由力的二阶统计量（自相关）决定，不由一阶统计量（均值）决定。这就是经典框架遗漏它的原因。",
+   x_en:"Phase average is zero (classical theory discards it). But its autocorrelation is nonzero. Dissipation is determined by second-order statistics (autocorrelation), not first-order (mean). This is why the classical framework missed it."},
+ ]},{t_zh:"假设 A1–A2",t_en:"Assumptions A1–A2",cl:"#d97706",it:[
+  {l_zh:"A1 (线性波动)",l_en:"A1 (Linear Waves)",
+   x_zh:"u_φ = ∇φ，ka ~ 0.01 精确成立。非线性波-波作用在衰减时间尺度可忽略。",
+   x_en:"u_φ = ∇φ, ka ~ 0.01 holds precisely. Nonlinear wave-wave interactions negligible on attenuation timescale."},
+  {l_zh:"A2 (时间尺度分离)",l_en:"A2 (Timescale Separation)",
+   eq:"\\tau_c\\sim\\ell/c_g\\sim 5\\,\\mathrm{s}\\;\\ll\\;\\Gamma^{-1}\\sim 10^5\\text{--}10^6\\,\\mathrm{s}",
+   x_zh:"分离度 ~10⁴。A2 不需要来证明 Γ ≥ 0（Bochner 定理独立保证），但需要来将 Green–Kubo 系数解释为指数衰减率。",
+   x_en:"Separation ratio ~10⁴. A2 is not needed for Γ ≥ 0 (guaranteed by Bochner alone), but is needed to interpret the Green–Kubo coefficient as an exponential decay rate."},
+ ]}]},
+
+{id:"mz",n:"05",cl:"#7c3aed",
+ t_zh:"Mori–Zwanzig 投影",t_en:"Mori–Zwanzig Projection",si:"SI §S2.D–E",
+ st_zh:"慢变量 a_k · 热浴 ω' · 正交投影 Q → F_k",
+ st_en:"Slow variable a_k · Bath ω' · Orthogonal projection Q → F_k",
+ tg:[["t-id","精确恒等式","Exact"],["t-as","A3–A4","A3–A4"]],
+ ss:[{t_zh:"投影框架",t_en:"Projection Framework",cl:"#7c3aed",it:[
+  {l_zh:"自由度划分",l_en:"DOF Partition",
+   x_zh:"慢变量：涌浪振幅 a_k(t)（变化时间 ~ Γ⁻¹ ~ 10⁶ s）。快变量/热浴：湍流场 ω'(x,t)（相关时间 ~ τ_c ~ 5 s）。时间尺度比 ~ 10⁵。MZ 投影是精确的算子恒等式——不做任何近似，只重写耦合方程。",
+   x_en:"Slow: swell amplitude a_k(t) (timescale ~ Γ⁻¹ ~ 10⁶ s). Fast/bath: ω'(x,t) (correlation ~ τ_c ~ 5 s). Ratio ~ 10⁵. MZ projection is an exact operator identity — no approximation, just a rewriting."},
+ ]},{t_zh:"假设 A3 — 整条链最关键的假设",t_en:"Assumption A3 — Most Critical in the Entire Chain",cl:"#d97706",it:[
+  {l_zh:"A3(i) 平稳性",l_en:"A3(i) Stationarity",
+   x_zh:"ω' 处于非平衡稳态（NESS），统计量时不变。混合层由持续风应力驱动，处于动态平衡。",
+   x_en:"ω' is in a non-equilibrium steady state (NESS), time-translationally invariant. Mixed layer is in dynamic equilibrium under sustained wind forcing."},
+  {l_zh:"A3(ii) 相位独立 ⚠",l_en:"A3(ii) Phase Independence ⚠",
+   x_zh:"涌浪相位 θ_k 与湍流涡度 ω' 统计独立。物理论据：远场涌浪源自 ~10⁴ km 外风暴，与本地湍流（由本地风/破碎/浮力驱动）无因果关系。但对局地风浪不成立——这精确定义了理论的适用边界。",
+   x_en:"Swell phase θ_k is statistically independent of ω'. Physical basis: remote swell originates from storms ~10⁴ km away, causally disconnected from local turbulence. Fails for local wind waves — this precisely defines the theory's domain.",
+   warn:true},
+  {l_zh:"A4 (弱耦合)",l_en:"A4 (Weak Coupling)",
+   eq:"\\delta\\equiv u'/c_g\\sim 10^{-3}\\text{--}10^{-2}\\ll 1",
+   x_zh:"保证：单次遭遇 ΔE/E ~ δ ≪ 1；涌浪反作用可忽略（热浴近似）；Born–Markov 近似有效。",
+   x_en:"Ensures: single encounter ΔE/E ~ δ ≪ 1; swell back-reaction negligible (bath approximation); Born–Markov valid."},
+ ]}]},
+
+{id:"gle",n:"06",cl:"#7c3aed",
+ t_zh:"广义 Langevin 方程 (GLE)",t_en:"Generalised Langevin Equation (GLE)",si:"SI §S2.E–F",
+ st_zh:"da_k/dt = iω a_k − ∫K a_k ds + F_k(t) · 乘性噪声",
+ st_en:"da_k/dt = iω a_k − ∫K a_k ds + F_k(t) · Multiplicative noise",
+ tg:[["t-id","MZ 精确输出","MZ Exact Output"]],
+ ss:[{t_zh:"GLE 与乘性噪声",t_en:"GLE and Multiplicative Noise",cl:"#7c3aed",it:[
+  {l_zh:"三项结构",l_en:"Three-Term Structure",
+   eq:"\\frac{da_k}{dt}=i\\omega_k a_k-\\int_0^t K_k(t-s)\\,a_k(s)\\,ds+F_k(t)",
+   x_zh:"自由振荡 + 记忆摩擦 + 随机力。K_k 和 F_k 都由 SVF 的统计性质完全确定，不是独立输入。",
+   x_en:"Free oscillation + memory friction + random force. Both K_k and F_k are fully determined by SVF statistics, not independent inputs."},
+  {l_zh:"乘性噪声的起源",l_en:"Origin of Multiplicative Noise",
+   x_zh:"能量 E_k = |a_k|² 的噪声项 η = 2Re[a_k* F_k] 正比于 a_k · ω'——乘性的。这是因为 SVF 的双线性结构 f_svf = u_φ × ω'（其中 u_φ ∝ a_k）。这是 Itô 因子 2 的数学根源。",
+   x_en:"Energy noise η = 2Re[a_k* F_k] is proportional to a_k · ω' — multiplicative. This follows from SVF's bilinear structure f_svf = u_φ × ω' (where u_φ ∝ a_k). This is the mathematical origin of the Itô factor of 2."},
+ ]}]},
+
+{id:"fdr",n:"07",cl:"#7c3aed",
+ t_zh:"FDR-II（第二涨落-耗散关系）",t_en:"FDR-II (Second Fluctuation-Dissipation Relation)",si:"SI §S2.C Eq.S.50",
+ st_zh:"K_k(τ) = ⟨F(0)F*(τ)⟩ / 2E_k · 不要求热平衡",
+ st_en:"K_k(τ) = ⟨F(0)F*(τ)⟩ / 2E_k · No thermal equilibrium required",
+ tg:[["t-th","精确关系","Exact"],["t-as","A3, A5","A3, A5"]],
+ ss:[{t_zh:"FDR-II 的证明",t_en:"Proof of FDR-II",cl:"#059669",it:[
+  {l_zh:"公式",l_en:"Formula",
+   eq:"K_{\\boldsymbol{k}}(\\tau)=\\frac{\\langle F_{\\boldsymbol{k}}(0)\\,F_{\\boldsymbol{k}}^*(\\tau)\\rangle}{\\langle|a_{\\boldsymbol{k}}|^2\\rangle}",
+   x_zh:"将摩擦核（K）与噪声力自相关（F）锁定在一起。证明仅需：(i) P 的自伴性（正交投影的构造性质）；(ii) ρ_ss 下相关函数的时间平移不变性（仅需稳态，不需详细平衡或 Liouville 算子自伴性）。",
+   x_en:"Locks the friction kernel (K) to the noise autocorrelation (F). Proof requires only: (i) self-adjointness of P (by construction); (ii) time-translation invariance under ρ_ss (only stationarity, no detailed balance or Liouville self-adjointness)."},
+  {l_zh:"非平衡适用性",l_en:"Non-Equilibrium Applicability",
+   x_zh:"海洋混合层 = 机械驱动 NESS（非热平衡）。Evans & Morriss (2008)、Marconi et al. (2008) 建立了非平衡 FDR 的完整理论。Han et al. (2021, Nature Physics) 在手征活性流体中实验验证了非平衡 Green–Kubo 关系。",
+   x_en:"Ocean mixed layer = mechanically driven NESS (not thermal equilibrium). Evans & Morriss (2008), Marconi et al. (2008) established non-equilibrium FDR theory. Han et al. (2021, Nature Physics) experimentally verified non-equilibrium Green–Kubo in chiral active fluids."},
+ ]},{t_zh:"物理核心含义",t_en:"Core Physical Meaning",cl:"#7c3aed",it:[
+  {l_zh:"Einstein 类比",l_en:"Einstein Analogy",
+   x_zh:"如同 D = kT/(6πηa) 将扩散（噪声）和摩擦锁定为同源：SVF 理论中，均值 μ_E 和方差 σ²(μ̂) 由同一个 F_k 自相关确定。这是双线预测结构的数学根基——不需要独立的散射参数。",
+   x_en:"Just as D = kT/(6πηa) locks diffusion (noise) and friction to a common source: in SVF theory, mean μ_E and variance σ²(μ̂) are both determined by the same F_k autocorrelation. This is the mathematical foundation of the dual-line prediction — no independent scatter parameter needed."},
+ ]}]},
+
+{id:"gk",n:"08",cl:"#059669",
+ t_zh:"Green–Kubo 公式 + Bochner 定理",t_en:"Green–Kubo Formula + Bochner's Theorem",si:"SI §S2.E Eq.S.53–59",
+ st_zh:"Γ(k) ≥ 0 由 Bochner 定理保证 · H 定理",
+ st_en:"Γ(k) ≥ 0 guaranteed by Bochner · H-theorem",
+ tg:[["t-th","Bochner → Γ≥0","Bochner → Γ≥0"],["t-re","H 定理","H-theorem"]],
+ ss:[{t_zh:"Green–Kubo 系数",t_en:"Green–Kubo Coefficient",cl:"#059669",it:[
+  {l_zh:"Markov 极限",l_en:"Markov Limit",
+   eq:"\\Gamma(\\boldsymbol{k})=\\frac{1}{2E_{\\boldsymbol{k}}}\\int_0^\\infty\\!\\operatorname{Re}\\bigl\\langle F_{\\boldsymbol{k}}(0)\\,F_{\\boldsymbol{k}}^*(\\tau)\\bigr\\rangle\\,d\\tau\\;\\geq\\;0",
+   x_zh:"在 A2（τ_c ≪ Γ⁻¹）下，记忆积分退化为局域摩擦。这不是涡粘拟合——是波-湍流耦合系统对 SVF 涨落的精确线性响应。",
+   x_en:"Under A2 (τ_c ≪ Γ⁻¹), memory integral reduces to local friction. Not an eddy-viscosity fit — exact linear response of the wave-turbulence system to SVF fluctuations."},
+  {l_zh:"Bochner 定理 → Γ ≥ 0",l_en:"Bochner's Theorem → Γ ≥ 0",
+   x_zh:"F_k(t) 是平稳过程 ⇒ 功率谱 S_F(ω) ≥ 0（Bochner 1933）。GK 积分 = S_F(0)/2 ≥ 0。因此 Γ ≥ 0 不是假设，是数学定理。",
+   x_en:"F_k(t) stationary ⇒ power spectrum S_F(ω) ≥ 0 (Bochner 1933). GK integral = S_F(0)/2 ≥ 0. Thus Γ ≥ 0 is a theorem, not an assumption."},
+ ]},{t_zh:"H 定理与不可逆性机制",t_en:"H-Theorem and Irreversibility Mechanism",cl:"#059669",it:[
+  {l_zh:"涌浪子空间 H 定理",l_en:"Swell-Subspace H-Theorem",
+   eq:"\\frac{d\\langle E_w\\rangle}{dt}=-2\\Gamma\\langle E_w\\rangle\\leq 0",
+   x_zh:"结构等同于 Boltzmann H 定理：宏观不可逆性从微观可逆动力学涌现，因为湍流热浴的自由度远多于涌浪子空间。",
+   x_en:"Structurally identical to Boltzmann's H-theorem: macroscopic irreversibility emerges from microscopically reversible dynamics because the turbulent bath has far more DOF than the swell subspace."},
+  {l_zh:"单阀门机制",l_en:"One-Way Valve Mechanism",
+   x_zh:"每次遭遇中能量交换近似对称（波可加速或减速涡旋）。但涡旋立即通过 Kolmogorov 级联将能量重分配到更小尺度，擦除精确返回所需的相位信息。能量可进入湍流连续谱；不能自发重组为涌浪频率和相位的窄带力。",
+   x_en:"Each encounter has nearly symmetric energy exchange. But eddies immediately redistribute energy to smaller scales via the Kolmogorov cascade, erasing phase information needed for exact return. Energy enters the turbulent continuum; it cannot spontaneously reorganise into a narrow-band force at the swell frequency and phase."},
+ ]}]},
+
+{id:"kol",n:"09",cl:"#db2777",
+ t_zh:"Kolmogorov 惯性子区谱（唯一经验输入）",t_en:"Kolmogorov Inertial Subrange (Sole Empirical Input)",si:"SI §S3–S4, §S5.H",
+ st_zh:"E(q) = C_K ε^{2/3} q^{-5/3} · 六十年实验支撑",
+ st_en:"E(q) = C_K ε^{2/3} q^{-5/3} · Six decades of experimental support",
+ tg:[["t-in","独立实验","Independent Expt"],["t-as","A5","A5"]],
+ ss:[{t_zh:"谱的输入",t_en:"Spectral Input",cl:"#db2777",it:[
+  {l_zh:"Kolmogorov 谱",l_en:"Kolmogorov Spectrum",
+   eq:"E_\\omega(q)=q^2 E_u(q)=C_K\\,\\varepsilon^{2/3}\\,q^{1/3}",
+   x_zh:"E_u(q) = C_K ε^{2/3} q^{-5/3}（速度谱），E_ω = q² E_u（涡度谱多一个 q² 因子）。C_K ≈ 1.5 为 Kolmogorov 常数，由独立湍流实验确定。",
+   x_en:"E_u(q) = C_K ε^{2/3} q^{-5/3} (velocity), E_ω = q²E_u (vorticity has extra q²). C_K ≈ 1.5 from independent turbulence experiments."},
+  {l_zh:"适用性：各向异性分层湍流",l_en:"Validity: Anisotropic Stratified Turbulence",
+   x_zh:"涌浪选择的尺度 q ~ k ~ 0.01–0.03 rad/m（逆波数 ~30–80 m）落在各向异性分层湍流区间。理论只需要水平涡度谱遵循 -5/3——不需要各向同性。Kunze (2019)、Klymak & Moum (2007) 支持。",
+   x_en:"Swell-selected scales q ~ k ~ 0.01–0.03 rad/m (inverse wavenumbers ~30–80 m) lie in the anisotropic stratified regime. Theory only requires horizontal vorticity spectrum to follow -5/3 — isotropy not needed. Supported by Kunze (2019), Klymak & Moum (2007)."},
+ ]}]},
+
+{id:"fk",n:"10",cl:"#d97706",
+ t_zh:"SVF 力核积分（力自相关的解析计算）",t_en:"SVF Force Kernel (Analytical Force Autocorrelation)",si:"SI §S3–S4 Eq.S.60–78",
+ st_zh:"角度积分 → 几何核 W(q/k) · 频率积分 → τ_eff · C_τ = 1",
+ st_en:"Angular integral → Geometric kernel W(q/k) · Frequency integral → τ_eff · C_τ = 1",
+ tg:[["t-re","解析积分","Analytical"]],
+ ss:[{t_zh:"力自相关的波数空间计算",t_en:"Force Autocorrelation in Wavenumber Space",cl:"#d97706",it:[
+  {l_zh:"力核的谱表示",l_en:"Spectral Representation of Force Kernel",
+   x_zh:"将 Green–Kubo 积分展开到波数-频率空间：Γ(k) = ∫d³q |V(k,q)|² E_ω(q) / (2 q c_g)。|V|² 是涡力顶角（vertex），E_ω 是涡度谱，1/(qc_g) 来自平流去相关。物理含义：只有与涌浪在波数和频率上同时匹配的涡度模态才能有效耦合。",
+   x_en:"Green–Kubo integral expanded in wavenumber-frequency space: Γ(k) = ∫d³q |V(k,q)|² E_ω(q)/(2qc_g). |V|² is the vortex-force vertex, E_ω is the vorticity spectrum, 1/(qc_g) from advective decorrelation. Only vorticity modes matching swell in both wavenumber and frequency couple effectively."},
+  {l_zh:"几何核（尺度选择窗）",l_en:"Geometric Kernel (Scale-Selection Window)",
+   eq:"\\mathcal{W}(\\eta)=\\frac{\\eta^2}{(1+\\eta^2)^2},\\quad\\eta=q/k",
+   x_zh:"在 η ~ 1（q ~ k）处取极大值。主导耦合发生在湍流尺度 ≈ 波动尺度：ℓ ~ k⁻¹ ~ 56 m（对 14 s 涌浪）。[k/2, 2k] 区间贡献约 58–66% 的总衰减。",
+   x_en:"Peaks at η ~ 1 (q ~ k). Dominant coupling occurs at turbulence scale ≈ wave scale: ℓ ~ k⁻¹ ~ 56 m (for 14 s swell). The band [k/2, 2k] accounts for ~58–66% of total attenuation."},
+ ]},{t_zh:"频率积分与 C_τ",t_en:"Frequency Integral and C_τ",cl:"#d97706",it:[
+  {l_zh:"有效平流去相关时间",l_en:"Effective Advective Decorrelation Time",
+   eq:"\\tau_{\\mathrm{eff}}=\\frac{C_\\tau}{q\\,c_g}\\sim 5\\,\\mathrm{s}\\;\\ll\\;\\tau_{\\mathrm{eddy}}\\sim(\\varepsilon q^2)^{-1/3}\\sim 10^3\\,\\mathrm{s}",
+   x_zh:"波能轨迹穿越一个涡旋相关长度的时间。波包以 c_g ~ 10 m/s 前进，涡旋以 u' ~ 0.01 m/s 运动——波包在涡旋几乎不动的情况下穿过它。C_τ ∈ [0.89, 1.25]，基准取 C_τ = 1。",
+   x_en:"Time for the wave-energy trajectory to traverse one eddy correlation length. Wave packet advances at c_g ~ 10 m/s while eddy moves at u' ~ 0.01 m/s — wave packet passes through the nearly frozen eddy. C_τ ∈ [0.89, 1.25], baseline C_τ = 1."},
+ ]}]},
+
+{id:"law",n:"11",cl:"#059669",
+ t_zh:"解析标度律（零参数预测）",t_en:"Analytical Scaling Law (Zero-Parameter Prediction)",si:"SI §S4–S5 Eq.S.79",
+ st_zh:"μ_E(ω) = C_tot ε^{2/3} g^{-7/3} ω^{8/3}",
+ st_en:"μ_E(ω) = C_tot ε^{2/3} g^{-7/3} ω^{8/3}",
+ tg:[["t-re","零参数","Zero-Param"]],
+ ss:[{t_zh:"标度律推导",t_en:"Derivation of Scaling Law",cl:"#059669",it:[
+  {l_zh:"核心结果",l_en:"Core Result",
+   eq:"\\mu_E(\\omega)=C_{\\mathrm{tot}}\\,\\varepsilon_{\\mathrm{eff}}^{2/3}\\,g^{-7/3}\\,\\omega^{8/3}",
+   x_zh:"将 Kolmogorov 涡度谱代入力核积分，所有积分解析可做。8/3 指数来源：Γ ∝ k^{1/3}（来自 −5/3 谱 + 力核积分），μ = 2Γ/c_g ∝ k^{4/3}，深水色散 k = ω²/g → μ ∝ ω^{8/3}。",
+   x_en:"Substituting Kolmogorov vorticity spectrum into the force kernel, all integrals evaluate analytically. Origin of 8/3: Γ ∝ k^{1/3} (from -5/3 spectrum + force kernel), μ = 2Γ/c_g ∝ k^{4/3}, deep-water dispersion k = ω²/g → μ ∝ ω^{8/3}."},
+ ]},{t_zh:"C_tot = 2π/3 的五因子分解",t_en:"Five-Factor Decomposition: C_tot = 2π/3",cl:"#059669",it:[
+  {l_zh:"分解公式",l_en:"Decomposition",
+   eq:"C_{\\mathrm{tot}}=4\\cdot C_K\\cdot \\widetilde{G}_{\\mathrm{geom}}\\cdot C_{\\mathcal{S}}\\cdot C_\\tau\\cdot C_E=\\frac{2\\pi}{3}\\approx 2.094",
+   x_zh:"4 = c_g⁻² 运动学因子；C_K ≈ 1.5 独立湍流实验；G̃_geom = 解析几何积分；C_S = 解析窗函数积分；C_τ = 1 基准去相关因子（范围 [0.89, 1.25]）；C_E = 混合层深度积分。所有系数由独立物理约束确定——无一拟合涌浪数据。C_tot ∈ [1.10, 3.34]（SI S5 Table S1）。",
+   x_en:"4 = c_g⁻² kinematic factor; C_K ≈ 1.5 from independent turbulence experiments; G̃_geom = analytical geometric integral; C_S = analytical window integral; C_τ = 1 baseline decorrelation (range [0.89, 1.25]); C_E = mixed-layer depth integral. All fixed by independent constraints — none fitted to swell data. C_tot ∈ [1.10, 3.34] (SI S5 Table S1)."},
+ ]}]},
+
+{id:"ito",n:"12",cl:"#db2777",
+ t_zh:"Itô 修正（2,2,1 结构常数）",t_en:"Itô Correction (2,2,1 Structural Constants)",si:"SI §S6.A–B Eq.S.200–215",
+ st_zh:"⟨μ̂⟩ = 2μ_E · Var(μ̂) = 2μ_E/L · c₀ = 1",
+ st_en:"⟨μ̂⟩ = 2μ_E · Var(μ̂) = 2μ_E/L · c₀ = 1",
+ tg:[["t-th","精确常数","Exact Constants"],["t-re","观测修正","Obs. Correction"]],
+ ss:[{t_zh:"遭遇级随机动力学",t_en:"Encounter-Level Stochastic Dynamics",cl:"#db2777",it:[
+  {l_zh:"能量增量的均值与方差",l_en:"Mean and Variance of Energy Increment",
+   x_zh:"ξ = ΔE/E：⟨ξ⟩ = −αδ²（衰减），Var(ξ) = β_ξ δ²（涨落）。FDR-II 精确锁定 α/β_ξ = 1/2——不依赖 δ、ℓ_corr 或 C_F(τ) 的具体函数形式。关键代数：FDR-II 给出 Γ = I_F/(2E_k)，导致 α ∝ 2Γ，β_ξ ∝ 4Γ，故 α = β_ξ/2。",
+   x_en:"ξ = ΔE/E: ⟨ξ⟩ = −αδ² (decay), Var(ξ) = β_ξ δ² (fluctuation). FDR-II exactly locks α/β_ξ = 1/2 — independent of δ, ℓ_corr, or C_F(τ) form. Key algebra: FDR-II gives Γ = I_F/(2E_k), leading to α ∝ 2Γ, β_ξ ∝ 4Γ, hence α = β_ξ/2."},
+ ]},{t_zh:"Itô 修正的推导（2,2,1 框架）",t_en:"Derivation of Itô Correction (2,2,1 Framework)",cl:"#db2777",it:[
+  {l_zh:"因子 2 的来源",l_en:"Origin of Factor 2",
+   eq:"\\Delta\\varepsilon=\\ln(1+\\xi)\\approx\\xi-\\tfrac{\\xi^2}{2}\\;\\Rightarrow\\;A=\\alpha+\\tfrac{1}{2}\\beta_\\xi=\\frac{\\beta_\\xi}{2}+\\frac{\\beta_\\xi}{2}=\\beta_\\xi",
+   x_zh:"对数变换引入 Itô 修正。均值系数 A = α + β_ξ/2。代入 α = β_ξ/2，得 A = β_ξ。因此 ⟨μ̂⟩/μ_E = A/α = β_ξ/(β_ξ/2) = 2。回归估计量 μ̂ 的期望值 = 2μ_E。1/2 来自物理衰减 Γ，1/2 来自乘性噪声的 Itô 修正。",
+   x_en:"Log transform introduces Itô correction. Mean coefficient A = α + β_ξ/2. Substituting α = β_ξ/2 gives A = β_ξ. Thus ⟨μ̂⟩/μ_E = A/α = β_ξ/(β_ξ/2) = 2. Regression estimator ⟨μ̂⟩ = 2μ_E. Half from physical damping Γ, half from the multiplicative-noise Itô correction."},
+  {l_zh:"c₀ = 1",l_en:"c₀ = 1",
+   eq:"c_0=\\frac{B}{A}=\\frac{\\beta_\\xi}{\\beta_\\xi}=1,\\qquad\\mathrm{Var}(\\hat\\mu)=\\frac{2\\mu_E}{L}",
+   x_zh:"方差系数 B = β_ξ（对数变换不改变领阶方差）。c₀ = B/A = β_ξ/β_ξ = 1。2 和 1 都是精确结构常数，由 FDR-II 的 α = β_ξ/2 + 双线性耦合代数完全确定。不假设 C_F(τ) 的函数形式，不需要热平衡，不用 ad hoc 闭合。",
+   x_en:"Variance coefficient B = β_ξ (log transform preserves leading-order variance). c₀ = B/A = β_ξ/β_ξ = 1. Both 2 and 1 are exact structural constants, fully determined by FDR-II's α = β_ξ/2 + bilinear coupling algebra. No assumption on C_F(τ) form, no thermal equilibrium, no ad hoc closure."},
+ ]},{t_zh:"历史影响",t_en:"Historical Impact",cl:"#dc2626",it:[
+  {l_zh:"所有卫星估计量 = 2μ_E",l_en:"All Satellite Estimators = 2μ_E",
+   x_zh:"Snodgrass (1966) 到 Stopa (2016) 的所有基于 ln E 回归的卫星估计量测量的都是 2μ_E，不是 μ_E。一半的 log-slope 来自物理衰减，一半来自噪声诱导的几何漂移。60 年来第一次指出此系统因子。",
+   x_en:"All ln E regression-based satellite estimators from Snodgrass (1966) to Stopa (2016) measure 2μ_E, not μ_E. Half of the log-slope comes from physical decay, half from noise-induced geometric drift. First identification of this systematic factor in 60 years."},
+ ]}]},
+
+{id:"clt",n:"13",cl:"#db2777",
+ t_zh:"CLT → 单轨道完整分布（双线预测）",t_en:"CLT → Full Pathwise Distribution (Dual-Line Prediction)",si:"SI §S6 Eq.S.216",
+ st_zh:"μ̂_i ~ N(μ_model,i, c₀·μ_svf,i/L_i + σ²_meas)",
+ st_en:"μ̂_i ~ N(μ_model,i, c₀·μ_svf,i/L_i + σ²_meas)",
+ tg:[["t-th","CLT","CLT"],["t-re","双线预测","Dual-Line"]],
+ ss:[{t_zh:"CLT 模型",t_en:"CLT Model",cl:"#db2777",it:[
+  {l_zh:"正态收敛",l_en:"Normal Convergence",
+   eq:"\\hat\\mu_i\\sim\\mathcal{N}\\!\\bigl(\\mu_{\\mathrm{model},i},\\;c_0\\,\\mu_{\\mathrm{svf},i}/L_i+\\sigma_{\\mathrm{meas}}^2\\bigr)",
+   x_zh:"N ~ L/ℓ_corr ~ 10⁵ 次独立遭遇，CLT 保证对数能量的累积变化渐近正态。μ_model = μ_svf + μ_Dore = 2μ_E + μ_v。均值和方差都由同一个 Green–Kubo 核确定——零个自由散射参数。c₀ = 1 为结构基准值。",
+   x_en:"N ~ L/ℓ_corr ~ 10⁵ independent encounters; CLT guarantees cumulative log-energy change converges to Normal. μ_model = μ_svf + μ_Dore = 2μ_E + μ_v. Mean and variance both fixed by the same Green–Kubo kernel — zero free scatter parameters. c₀ = 1 is the structural baseline."},
+ ]},{t_zh:"双线结构与可观测推论",t_en:"Dual-Line Structure and Observable Consequences",cl:"#db2777",it:[
+  {l_zh:"第一线（均值 → 图4检验）",l_en:"Line 1 (Mean → Fig 4 Test)",
+   x_zh:"μ_E(ω) = C_tot ε^{2/3} g^{-7/3} ω^{8/3}。可观测均值 μ_model = 2μ_E + μ_Dore。系综层面的量级、频率标度、空间分布。β = C_tot/(2π/3) = 1 为零参数预测。",
+   x_en:"μ_E(ω) = C_tot ε^{2/3} g^{-7/3} ω^{8/3}. Observable mean μ_model = 2μ_E + μ_Dore. Ensemble-level magnitude, frequency scaling, spatial pattern. β = C_tot/(2π/3) = 1 is the zero-parameter prediction."},
+  {l_zh:"第二线（分布 → 图5检验）",l_en:"Line 2 (Distribution → Fig 5 Test)",
+   x_zh:"完整条件分布 N(μ_model, c₀·μ_svf/L + σ²_meas)。由 FDR-II 锁定，无独立散射参数。c₀ = 1 为结构基准。沿轨道相关性将 c₀ 重整化为 R，但第一矩不受影响。",
+   x_en:"Full conditional distribution N(μ_model, c₀·μ_svf/L + σ²_meas). Locked by FDR-II, no independent scatter parameter. c₀ = 1 is the structural baseline. Along-ray correlations renormalise c₀ to R, but the first moment is unaffected."},
+  {l_zh:"负衰减率（零参数预测）",l_en:"Negative Attenuation Rates (Zero-Parameter Prediction)",
+   eq:"P(\\hat\\mu<0)=\\Phi(-\\mathcal{S}),\\quad \\mathcal{S}=\\mu_{\\mathrm{model}}/\\sigma_{\\mathrm{tot}}\\sim\\mathcal{O}(1)",
+   x_zh:"13–27% 的跨洋轨迹预计出现表观负衰减——不是测量噪声，是乘性随机游走的内禀预测。S ~ O(1) 意味着典型跨洋路径上信噪比仅为量级 1。Stopa (2016) SAR 数据负值比例 13.3%，Jiang (2016) 高纬度数据 ~24%，均与理论一致。",
+   x_en:"13–27% of trans-oceanic tracks predicted to show apparent negative attenuation — not noise, but an intrinsic prediction of the multiplicative random walk. S ~ O(1) means signal-to-noise is only order unity on typical trans-oceanic paths. Stopa (2016) SAR shows 13.3%, Jiang (2016) high-latitude ~24%, both consistent with theory."},
+ ]}]},
+
+{id:"f4",n:"14",cl:"#dc2626",
+ t_zh:"系综验证（图 4）",t_en:"Ensemble Validation (Fig. 4)",si:"正文 §5 / SI §S7",
+ st_zh:"全球地图 + PDF + Wilcoxon (p = 0.816) + 振幅独立",
+ st_en:"Global maps + PDF + Wilcoxon (p = 0.816) + Amplitude independence",
+ tg:[["t-re","系综层面","Ensemble"]],
+ ss:[{t_zh:"检验结果",t_en:"Test Results",cl:"#dc2626",it:[
+  {l_zh:"量级与偏差",l_en:"Magnitude and Bias",
+   x_zh:"μ_model 和 μ_obs 都在 ~10⁻⁷ m⁻¹。配对 Wilcoxon 检验 p = 0.816（无系统偏差）。241 条跨洋轨迹。",
+   x_en:"Both μ_model and μ_obs at ~10⁻⁷ m⁻¹. Paired Wilcoxon test p = 0.816 (no systematic bias). 241 trans-oceanic tracks."},
+  {l_zh:"振幅独立性（最纯粹结构检验）",l_en:"Amplitude Independence (Purest Structural Test)",
+   x_zh:"r = 0.00, p = 0.98。Green–Kubo 系数 Γ 与波振幅无关（E_k 在力自相关因式分解中消去）。卫星数据 H_s 动态范围跨 14 倍（H_s²），无可检测的振幅依赖性。这一刀切掉了所有 amplitude-dependent 经验源项（如 μ ∝ H_s²）。",
+   x_en:"r = 0.00, p = 0.98. Green–Kubo coefficient Γ is independent of wave amplitude (E_k cancels in the force autocorrelation factorisation). Satellite H_s dynamic range spans factor of 14 (in H_s²), with no detectable amplitude dependence. This rules out all amplitude-dependent empirical source terms (e.g. μ ∝ H_s²)."},
+ ]}]},
+
+{id:"f5",n:"15",cl:"#dc2626",
+ t_zh:"单轨道验证（图 5）",t_en:"Pathwise Validation (Fig. 5)",si:"正文 §6 / SI §S6–S7",
+ st_zh:"负值率 vs L, ω + β MLE [0.95, 1.64] + 可靠性图 + 衰减预算",
+ st_en:"Neg. rate vs L, ω + β MLE [0.95, 1.64] + Reliability diagram + Budget",
+ tg:[["t-re","单轨道","Pathwise"]],
+ ss:[{t_zh:"检验结果",t_en:"Test Results",cl:"#dc2626",it:[
+  {l_zh:"负值率 vs L 和 ω",l_en:"Negative Rate vs L and ω",
+   x_zh:"路径越长 → S 越大 → 负值率越低（vs L）；频率越高 → μ 越大 → 负值率越低（vs ω）。两者均与理论零参数曲线定量一致。频率依赖性是 ω^{8/3} 标度律的独立验证——从分布而非均值检验。",
+   x_en:"Longer paths → larger S → lower negative rate (vs L); higher frequency → larger μ → lower negative rate (vs ω). Both quantitatively consistent with zero-parameter curves. Frequency dependence is an independent verification of ω^{8/3} — tested through the distribution rather than the mean."},
+  {l_zh:"β profile likelihood",l_en:"β Profile Likelihood",
+   x_zh:"β_MLE = 1.30, 95% CI [0.95, 1.64]。零参数预测 β = 1 落在 95% CI 和 C_tot 理论范围 [1.10, 3.34] 内。包含 Dore 层流粘性贡献（总衰减的 ~13–21%）后 β_MLE 更接近 1。联合 profiling (β, c₀, σ_meas) 保持 β = 1 在 CI 内。",
+   x_en:"β_MLE = 1.30, 95% CI [0.95, 1.64]. Zero-parameter prediction β = 1 lies within both 95% CI and theoretical C_tot range [1.10, 3.34]. Including Dore laminar viscous contribution (~13–21% of total) shifts β_MLE closer to unity. Joint profiling over (β, c₀, σ_meas) keeps β = 1 within CI."},
+  {l_zh:"可靠性图与覆盖率",l_en:"Reliability Diagram and Coverage",
+   x_zh:"c₀ = 1 时：1σ/2σ 覆盖率 76%/94%（名义 68%/95%）。c₀,MLE = 0.78 时：73%/94%。预测方差解释观测散布的大部分。PIT 直方图近似均匀。",
+   x_en:"At c₀ = 1: 1σ/2σ coverage 76%/94% (nominal 68%/95%). At c₀,MLE = 0.78: 73%/94%. Predicted variance explains most of observed scatter. PIT histogram approximately uniform."},
+ ]},{t_zh:"图4 + 图5 互补",t_en:"Fig 4 + Fig 5 Complementarity",cl:"#dc2626",it:[
+  {l_zh:"两层检验缺一不可",l_en:"Both Layers Indispensable",
+   x_zh:"图4 = 系综均值层面（量级对不对？β = 1 检验）。图5 = 条件分布层面（物理图像对不对？c₀ = 1 检验）。前者是严格零参数预测；后者是闭合检验（c₀ 更敏感于环境输入质量）。五条独立检验线：系综均值量级、全球空间分布、负值率 vs 路径长度、负值率 vs 频率、预测覆盖率。",
+   x_en:"Fig 4 = ensemble mean level (is the magnitude right? β = 1 test). Fig 5 = conditional distribution level (is the physical picture right? c₀ = 1 test). The former is a strict zero-parameter prediction; the latter is a closure test (c₀ is more sensitive to environmental input quality). Five independent test lines: ensemble-mean magnitude, global spatial pattern, negative fraction vs path length, negative fraction vs frequency, predictive coverage."},
+ ]}]},
+];
+
+
+// ─── RENDERING ──────────────────────────────────────────
+var openNode = null;
+var openSubs = {};
+var openItems = {};
+
+function tx(zh,en){ return lang==='zh'?zh:en; }
+
+function renderKatex(tex, el) {
+  try { katex.render(tex, el, {displayMode:true, throwOnError:false, trust:true}); }
+  catch(e) { el.textContent = tex; }
+}
+
+function buildChain(){
+  var bar = document.getElementById('chainBar');
+  bar.innerHTML = '';
+  var names = lang==='zh'?CHAIN_ZH:CHAIN_EN;
+  names.forEach(function(nm,i){
+    var s = document.createElement('span');
+    s.className = 'c-node';
+    s.textContent = nm;
+    s.onclick = function(){ scrollToNode(i); };
+    bar.appendChild(s);
+    if(i<names.length-1){
+      var a = document.createElement('span');
+      a.className = 'c-arr';
+      a.textContent = '→';
+      bar.appendChild(a);
+    }
+  });
+}
+
+function buildStats(){
+  var bar = document.getElementById('statsBar');
+  bar.innerHTML = '';
+  var data = lang==='zh'?STATS_ZH:STATS_EN;
+  data.forEach(function(s){
+    var d = document.createElement('div');
+    d.className = 'stat';
+    d.innerHTML = '<div class="stat-n" style="color:'+s.c+'">'+s.n+'</div><div class="stat-l">'+s.l+'</div>';
+    bar.appendChild(d);
+  });
+}
+
+function buildLegend(){
+  var bar = document.getElementById('legendBar');
+  bar.innerHTML = '';
+  var data = lang==='zh'?LEG_ZH:LEG_EN;
+  data.forEach(function(d){
+    var s = document.createElement('span');
+    s.className = 'tag '+d[0];
+    s.textContent = d[1];
+    bar.appendChild(s);
+  });
+}
+
+function renderItem(item, nodeId, subIdx, itemIdx, color) {
+  var key = nodeId+'-'+subIdx+'-'+itemIdx;
+  var div = document.createElement('div');
+  var hdr = document.createElement('div');
+  hdr.className = 'si-hdr';
+  hdr.innerHTML = '<div class="si-dot" style="background:'+color+'"></div>'+
+    '<span class="si-label">'+tx(item.l_zh,item.l_en)+'</span>'+
+    '<span class="si-chev'+(openItems[key]?' open':'')+'">▶</span>';
+  hdr.onclick = function(e){
+    e.stopPropagation();
+    openItems[key] = !openItems[key];
+    render();
+  };
+  div.appendChild(hdr);
+  if(openItems[key]){
+    var body = document.createElement('div');
+    body.className = 'si-body';
+    if(item.eq){
+      var eqDiv = document.createElement('div');
+      eqDiv.className = 'eq-block';
+      body.appendChild(eqDiv);
+      setTimeout(function(){ renderKatex(item.eq, eqDiv); }, 0);
+    }
+    var txt = tx(item.x_zh, item.x_en);
+    if(txt){
+      var cls = item.warn ? 'warn-block' : (item.note ? 'note-block' : '');
+      var p = document.createElement('div');
+      if(cls) p.className = cls;
+      p.textContent = txt;
+      p.style.marginTop = '4px';
+      body.appendChild(p);
+    }
+    div.appendChild(body);
+  }
+  return div;
+}
+
+function renderSub(sub, nodeId, subIdx){
+  var key = nodeId+'-'+subIdx;
+  var div = document.createElement('div');
+  var hdr = document.createElement('div');
+  hdr.className = 'ss-hdr'+(openSubs[key]?' open':'');
+  hdr.innerHTML = '<div class="ss-title"><div class="ss-bar" style="background:'+sub.cl+'"></div>'+
+    '<span style="color:'+(openSubs[key]?sub.cl:'var(--text)')+'">'+tx(sub.t_zh,sub.t_en)+'</span>'+
+    '<span class="ss-chev'+(openSubs[key]?' open':'')+'">▼</span></div>';
+  hdr.onclick = function(e){
+    e.stopPropagation();
+    openSubs[key] = !openSubs[key];
+    render();
+  };
+  div.appendChild(hdr);
+  if(openSubs[key]){
+    var body = document.createElement('div');
+    body.className = 'ss-body';
+    sub.it.forEach(function(item,i){
+      body.appendChild(renderItem(item, nodeId, subIdx, i, sub.cl));
+    });
+    div.appendChild(body);
+  }
+  return div;
+}
+
+function renderNode(node, idx){
+  var isOpen = openNode === node.id;
+  var isLast = idx === NODES.length - 1;
+  var wrap = document.createElement('div');
+  wrap.className = 'node';
+  wrap.id = 'node-'+node.id;
+
+  var hdr = document.createElement('div');
+  hdr.className = 'n-hdr'+(isOpen?' open':'');
+  var tagHtml = node.tg.map(function(t){ return '<span class="tag '+t[0]+'">'+tx(t[1],t[2])+'</span>'; }).join('');
+  tagHtml += '<span class="tag t-in">'+node.si+'</span>';
+  hdr.innerHTML = '<div class="n-num" style="background:'+node.cl+'">'+node.n+'</div>'+
+    '<div style="flex:1;min-width:0"><div class="n-title">'+tx(node.t_zh,node.t_en)+'</div>'+
+    '<div class="n-sub">'+tx(node.st_zh,node.st_en)+'</div>'+
+    '<div class="n-tags">'+tagHtml+'</div></div>'+
+    '<span class="chev'+(isOpen?' open':'')+'">▼</span>';
+  hdr.onclick = function(){
+    openNode = isOpen ? null : node.id;
+    render();
+  };
+  wrap.appendChild(hdr);
+
+  if(isOpen){
+    var body = document.createElement('div');
+    body.className = 'n-body open';
+    node.ss.forEach(function(sub,i){
+      body.appendChild(renderSub(sub, node.id, i));
+    });
+    wrap.appendChild(body);
+  }
+
+  if(!isLast){
+    var conn = document.createElement('div');
+    conn.className = 'conn';
+    conn.innerHTML = '<div class="conn-line" style="background:'+node.cl+'55"></div>';
+    wrap.appendChild(conn);
+  }
+  return wrap;
+}
+
+function render(){
+  document.getElementById('mainTitle').textContent = tx('SVF Theory · 完整推导架构','SVF Theory · Complete Derivation Architecture');
+  document.getElementById('mainSub').textContent = tx(
+    '从 Navier–Stokes 方程到涌浪衰减标度律 · 15 节点三级展开 · 点击探索',
+    'From Navier–Stokes to swell attenuation scaling law · 15 nodes, 3-level drill-down · Click to explore'
+  );
+  buildChain();
+  buildStats();
+  buildLegend();
+  var flow = document.getElementById('flow');
+  flow.innerHTML = '';
+  NODES.forEach(function(node,i){
+    flow.appendChild(renderNode(node,i));
+  });
+}
+
+function scrollToNode(idx){
+  openNode = NODES[idx].id;
+  render();
+  setTimeout(function(){
+    var el = document.getElementById('node-'+NODES[idx].id);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  }, 50);
+}
+
+function toggleLang(){
+  lang = lang==='zh'?'en':'zh';
+  document.getElementById('langBtn').textContent = lang==='zh'?'EN / 中':'中 / EN';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
