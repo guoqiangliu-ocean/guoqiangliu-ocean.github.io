@@ -1,204 +1,400 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guoqiang Liu - Physical Oceanographer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guoqiang Liu — Physical Oceanographer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deep: #0a1628;
+  --ocean: #0c2340;
+  --surface: #133a5e;
+  --wave: #1a6fb5;
+  --foam: #5bb8f5;
+  --crest: #a8dcff;
+  --sand: #f0e6d3;
+  --white: #f7f9fc;
+  --gold: #e8b04a;
+}
 
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <style>
-        :root {
-            --gold: #FFD700;
-            --cyan: #7fdbff;
-            --bg-dark: #050f1a;
-            --glass: rgba(10, 25, 40, 0.65);
-        }
+body {
+  background: var(--deep);
+  color: var(--white);
+  font-family: 'Source Sans 3', sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
 
-        * { box-sizing: border-box; }
+/* ── animated ocean background ── */
+.ocean-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.ocean-bg::before {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 0%, rgba(26,111,181,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 20%, rgba(91,184,245,0.08) 0%, transparent 50%);
+  animation: drift 20s ease-in-out infinite alternate;
+}
+@keyframes drift {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(40px, -20px) rotate(2deg); }
+}
 
-        body, html {
-            margin: 0; padding: 0;
-            font-family: "Inter", sans-serif;
-            background-color: var(--bg-dark);
-            color: #fff;
-            min-height: 100vh;
-        }
+/* wave lines */
+.wave-line {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  height: 2px;
+  opacity: 0.06;
+  background: linear-gradient(90deg, transparent, var(--foam), transparent);
+  animation: wave-float linear infinite;
+}
+.wave-line:nth-child(1) { top: 25%; animation-duration: 18s; }
+.wave-line:nth-child(2) { top: 40%; animation-duration: 22s; animation-delay: -4s; }
+.wave-line:nth-child(3) { top: 55%; animation-duration: 26s; animation-delay: -8s; }
+.wave-line:nth-child(4) { top: 70%; animation-duration: 20s; animation-delay: -12s; }
+.wave-line:nth-child(5) { top: 85%; animation-duration: 24s; animation-delay: -2s; }
+@keyframes wave-float {
+  0%   { transform: translateX(-10%); }
+  100% { transform: translateX(10%); }
+}
 
-        /* Fixed Background Layers */
-        #bg-video {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -10; object-fit: cover;
-            filter: brightness(0.4) contrast(1.1);
-        }
+/* ── main content ── */
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
 
-        .video-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -9;
-            background: radial-gradient(circle at center, rgba(5,15,26,0.1) 0%, rgba(5,15,26,0.8) 100%);
-        }
+/* ── hero ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 0 60px;
+}
 
-        #spray-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -8; pointer-events: none;
-        }
+.hero-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--foam);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease-out 0.2s forwards;
+}
 
-        /* Top Navigation */
-        .topnav {
-            position: fixed; top: 0; width: 100%; height: 70px;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 5%; z-index: 100;
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(2.6rem, 6vw, 4.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease-out 0.4s forwards;
+}
+.hero h1 .highlight {
+  background: linear-gradient(135deg, var(--foam), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-        .brand { font-family: "Playfair Display"; font-weight: 700; font-size: 1.4rem; color: #fff; text-decoration: none; }
-        .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 25px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+.hero-sub {
+  font-size: 1.15rem;
+  font-weight: 300;
+  color: rgba(247,249,252,0.55);
+  line-height: 1.7;
+  max-width: 560px;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease-out 0.6s forwards;
+}
 
-        /* Main Container */
-        .main-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 100px 20px;
-        }
+.hero-sub a {
+  color: var(--crest);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(168,220,255,0.3);
+  transition: border-color 0.3s;
+}
+.hero-sub a:hover { border-color: var(--crest); }
 
-        .name-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 60px 50px; border-radius: 12px;
-            text-align: center;
-            max-width: 900px; width: 100%;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            margin-bottom: 40px;
-        }
+/* ── demo buttons ── */
+.demos {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.8s ease-out 0.8s forwards;
+}
 
-        .name-card h1 {
-            font-family: "Playfair Display", serif;
-            font-size: clamp(2.5rem, 8vw, 5rem);
-            margin: 0; letter-spacing: -1px;
-        }
+.demo-card {
+  position: relative;
+  flex: 1 1 280px;
+  min-width: 280px;
+  padding: 32px 28px 28px;
+  border-radius: 16px;
+  background: linear-gradient(165deg, rgba(19,58,94,0.6), rgba(12,35,64,0.8));
+  border: 1px solid rgba(91,184,245,0.12);
+  text-decoration: none;
+  color: var(--white);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  cursor: pointer;
+  display: block;
+}
+.demo-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(91,184,245,0.08), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.demo-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(91,184,245,0.3);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3), 0 0 0 1px rgba(91,184,245,0.1);
+}
+.demo-card:hover::before { opacity: 1; }
 
-        .subtitle {
-            font-size: 1.1rem; color: var(--cyan); margin-top: 15px;
-            letter-spacing: 4px; text-transform: uppercase;
-        }
+.demo-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  font-size: 1.3rem;
+  position: relative;
+  z-index: 1;
+}
+.demo-icon.ocean {
+  background: linear-gradient(135deg, #1a6fb5, #0c7b93);
+}
+.demo-icon.math {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+}
 
-        .mission-text {
-            margin-top: 30px; 
-            font-size: 1.4rem;
-            color: var(--gold);
-            font-style: italic;
-            font-weight: 300;
-            opacity: 0.9;
-        }
+.demo-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--foam);
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+}
 
-        /* Map Styling */
-        #visitor-map {
-            width: 100%; max-width: 900px; height: 300px; border-radius: 8px; 
-            margin-top: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            filter: grayscale(0.5) contrast(1.2);
-        }
+.demo-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+}
 
-        .visitor-info { margin-top: 20px; font-size: 0.7rem; color: var(--cyan); letter-spacing: 2px; }
+.demo-desc {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: rgba(247,249,252,0.5);
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-in { animation: fadeIn 1s forwards; }
-    </style>
+.demo-arrow {
+  position: absolute;
+  top: 28px;
+  right: 24px;
+  font-size: 1.1rem;
+  color: rgba(247,249,252,0.2);
+  transition: all 0.4s;
+  z-index: 1;
+}
+.demo-card:hover .demo-arrow {
+  color: var(--foam);
+  transform: translate(4px, -2px);
+}
+
+/* ── section ── */
+.section {
+  padding: 80px 0;
+  opacity: 0;
+  animation: fadeUp 0.8s ease-out 1s forwards;
+}
+
+.section-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--foam);
+  margin-bottom: 28px;
+}
+
+.about-text {
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.85;
+  color: rgba(247,249,252,0.65);
+  max-width: 640px;
+}
+.about-text strong {
+  color: var(--white);
+  font-weight: 500;
+}
+
+/* ── research tags ── */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 32px;
+}
+.tag {
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: 1px solid rgba(91,184,245,0.15);
+  color: rgba(247,249,252,0.6);
+  background: rgba(91,184,245,0.04);
+  transition: all 0.3s;
+}
+.tag:hover {
+  border-color: rgba(91,184,245,0.35);
+  color: var(--crest);
+  background: rgba(91,184,245,0.08);
+}
+
+/* ── contact bar ── */
+.contact {
+  padding: 40px 0 60px;
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.8s ease-out 1.2s forwards;
+}
+.contact a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  color: rgba(247,249,252,0.4);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.contact a:hover { color: var(--foam); }
+
+/* ── footer ── */
+.footer {
+  padding: 32px 0;
+  border-top: 1px solid rgba(91,184,245,0.08);
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(247,249,252,0.2);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── responsive ── */
+@media (max-width: 600px) {
+  .container { padding: 0 20px; }
+  .hero { padding: 60px 0 40px; }
+  .demos { flex-direction: column; }
+  .demo-card { min-width: auto; }
+}
+</style>
 </head>
 <body>
 
-<video autoplay muted loop playsinline id="bg-video">
-    <source src="https://videos.pexels.com/video-files/855018/855018-hd_1920_1080_30fps.mp4" type="video/mp4">
-</video>
-<div class="video-overlay"></div>
-<canvas id="spray-canvas"></canvas>
-
-<nav class="topnav">
-    <a href="#" class="brand">G. LIU</a>
-    <div class="nav-links">
-        <a href="#">Research</a>
-        <a href="#">Publications</a>
-        <a href="#">Contact</a>
-    </div>
-</nav>
-
-<div class="main-wrapper">
-    <section class="name-card animate-in">
-        <h1>Guoqiang Liu</h1>
-        <div class="subtitle">Physical Oceanographer</div>
-        <p class="mission-text">Explore the most complicated upper ocean dynamics</p>
-    </section>
-
-    <div id="visitor-map" class="animate-in" style="animation-delay: 0.3s;"></div>
-    <div class="visitor-info animate-in" id="visitor-ip" style="animation-delay: 0.5s;">STATION ACCESS INITIALIZING...</div>
+<div class="ocean-bg">
+  <div class="wave-line"></div>
+  <div class="wave-line"></div>
+  <div class="wave-line"></div>
+  <div class="wave-line"></div>
+  <div class="wave-line"></div>
 </div>
 
-<script>
-    // 1. Map and IP Logic
-    async function initStation() {
-        try {
-            const res = await fetch('https://ipapi.co/json/');
-            const data = await res.json();
-            const { latitude, longitude, city, ip } = data;
+<div class="container">
+  <section class="hero">
+    <div class="hero-tag">Physical Oceanography · Statistical Mechanics</div>
+    <h1>Guoqiang <span class="highlight">Liu</span></h1>
+    <p class="hero-sub">
+      Researcher at <a href="https://www.ku.ac.ae" target="_blank">Khalifa University</a>, Abu Dhabi. 
+      Applying non-equilibrium statistical mechanics to ocean wave dynamics — resolving the swell dissipation paradox from first principles.
+    </p>
 
-            document.getElementById('visitor-ip').innerText = `GLOBAL NODE: ${city.toUpperCase()} | IP: ${ip} | STATION ACTIVE`;
+    <div class="demos">
+      <a class="demo-card" href="eddy-wave.html" target="_blank">
+        <span class="demo-arrow">↗</span>
+        <div class="demo-icon ocean">🌊</div>
+        <div class="demo-label">Interactive Demo</div>
+        <div class="demo-title">Stochastic Vortex Force Analogy</div>
+        <div class="demo-desc">Eddy–wave interaction visualization — how turbulent eddies drive irreversible swell attenuation.</div>
+      </a>
 
-            const map = L.map('visitor-map', { center: [latitude, longitude], zoom: 3, zoomControl: false, attributionControl: false });
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+      <a class="demo-card" href="svf_derivation_chain.html" target="_blank">
+        <span class="demo-arrow">↗</span>
+        <div class="demo-icon math">∂</div>
+        <div class="demo-label">Theory Map</div>
+        <div class="demo-title">SVF Derivation Architecture</div>
+        <div class="demo-desc">Complete derivation chain from Navier-Stokes to the zero-parameter swell dissipation prediction.</div>
+      </a>
+    </div>
+  </section>
 
-            const icon = L.divIcon({ 
-                className: 'pulse', 
-                html: `<div style="width:12px; height:12px; background:#FFD700; border-radius:50%; box-shadow: 0 0 15px #FFD700;"></div>`
-            });
-            L.marker([latitude, longitude], { icon }).addTo(map);
-        } catch (e) {
-            document.getElementById('visitor-ip').innerText = "STATION OFFLINE | SENSOR ERROR";
-        }
-    }
+  <section class="section">
+    <div class="section-title">Research Focus</div>
+    <div class="about-text">
+      My central contribution is the <strong>Stochastic Vortex Force (SVF)</strong> framework, which resolves the ~60-year Snodgrass swell paradox by deriving irreversible swell dissipation from first principles with <strong>zero fitted parameters</strong>. The theory bridges Mori-Zwanzig projection, Green-Kubo relations, and Kolmogorov turbulence scaling to yield a universal dissipation rate μ(ω) ∝ ε<sub>eff</sub><sup>2/3</sup> ω<sup>8/3</sup>.
+    </div>
+    <div class="tags">
+      <span class="tag">Ocean Swell Dissipation</span>
+      <span class="tag">Mori-Zwanzig Formalism</span>
+      <span class="tag">Green-Kubo Relations</span>
+      <span class="tag">Turbulence Scaling</span>
+      <span class="tag">CFOSAT / SWOT</span>
+      <span class="tag">Radiochemistry Monitoring</span>
+      <span class="tag">Field Campaigns</span>
+    </div>
+  </section>
 
-    // 2. Canvas Spray Effect
-    const canvas = document.getElementById('spray-canvas');
-    const ctx = canvas.getContext('2d');
-    let w, h, particles = [];
+  <div class="contact">
+    <a href="mailto:guoqiang.liu@ku.ac.ae">guoqiang.liu@ku.ac.ae</a>
+    <a href="https://github.com/guoqiangliu" target="_blank">GitHub</a>
+    <a href="https://scholar.google.com/" target="_blank">Google Scholar</a>
+  </div>
 
-    function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize);
-    resize();
-
-    class Particle {
-        constructor() { this.init(); }
-        init() {
-            this.x = Math.random() * w; this.y = Math.random() * h;
-            this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3;
-            this.alpha = Math.random() * 0.5;
-        }
-        draw() {
-            ctx.fillStyle = `rgba(200, 230, 255, ${this.alpha})`;
-            ctx.beginPath(); ctx.arc(this.x, this.y, Math.random() * 2, 0, Math.PI * 2); ctx.fill();
-        }
-        update() {
-            this.x += this.vx; this.y += this.vy;
-            if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.init();
-        }
-    }
-
-    for(let i=0; i<80; i++) particles.push(new Particle());
-    function anim() {
-        ctx.clearRect(0,0,w,h);
-        particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(anim);
-    }
-
-    initStation();
-    anim();
-</script>
+  <div class="footer">© 2026 Guoqiang Liu · Khalifa University</div>
+</div>
 
 </body>
 </html>
