@@ -145,17 +145,17 @@ var NODES = [
  tg:[["t-id","精确推导","Exact"],["t-th","能量定理","Energy Thm"]],
  ss:[{t_zh:"涡力形式的推导",t_en:"Vortex-Force Form",cl:"#2563eb",it:[
   {l_zh:"向量恒等式 → 涡力方程",l_en:"Vector Identity → Vortex-Force Eqn",
-   eq:"\\partial_t\\boldsymbol{u}+(\\boldsymbol{u}\\cdot\\nabla)\\boldsymbol{u}=\\boldsymbol{u}_\\phi\\times\\boldsymbol{\\omega}-\\frac{1}{\\rho}\\nabla\\Pi+\\nu\\nabla^2\\boldsymbol{u}",
-   x_zh:"利用 A·∇B + B·∇A 展开，结合 ∇×u_φ = 0，吸收梯度项到修正压力 Π。耦合以精确的涡力 u_φ × ω 出现。",
-   x_en:"Expanding via vector identity, using curl u_φ = 0, absorbing gradients into modified pressure Π. Coupling appears as exact vortex force."},
- ]},{t_zh:"能量收支定理 (Eq.S.11)",t_en:"Energy Budget Theorem (Eq.S.11)",cl:"#059669",it:[
+   eq:"\\partial_t\\boldsymbol{U}=\\boldsymbol{U}\\times\\boldsymbol{\\omega}-\\frac{1}{\\rho}\\nabla\\Pi+\\nu\\nabla^2\\boldsymbol{U}",
+   x_zh:"对总场 U 利用 (U·∇)U = ω×U + ∇(|U|²/2)，吸收梯度项到修正压力 Π = P/ρ + |U|²/2。由 Helmholtz 分解 U = u_φ + u_ψ 和 ∇×u_φ = 0，总涡力 U × ω 中与波-流能量交换相关的分量精确地为 u_φ × ω。",
+   x_en:"For total field U, using (U·∇)U = ω×U + ∇(|U|²/2), absorbing gradients into modified pressure Π = P/ρ + |U|²/2. From Helmholtz U = u_φ + u_ψ and ∇×u_φ = 0, the wave-flow energy exchange component of U × ω is exactly u_φ × ω."},
+ ]},{t_zh:"波能交换定理 (Eq.S.11)",t_en:"Wave-Energy Exchange Theorem (Eq.S.11)",cl:"#059669",it:[
   {l_zh:"精确结果",l_en:"Exact Result",
-   eq:"\\frac{d}{dt}\\int\\tfrac{1}{2}\\rho|\\boldsymbol{u}|^2\\,dV=\\rho\\!\\int\\boldsymbol{u}\\cdot(\\boldsymbol{u}_\\phi\\times\\boldsymbol{\\omega})\\,dV-\\rho\\nu\\!\\int|\\nabla\\boldsymbol{u}|^2\\,dV",
-   x_zh:"压力项和自平流项因散度定理积分为零。u_φ × ω 是 NS 中波-流非粘性能量交换的唯一通道——这由精确计算证明，不是假设。",
-   x_en:"Pressure and self-advection terms vanish by divergence theorem. u_φ × ω is the sole non-viscous wave-flow energy exchange channel — proven exactly, not assumed."},
+   eq:"\\frac{d}{dt}\\int\\tfrac{1}{2}\\rho|\\boldsymbol{u}_\\phi|^2\\,dV=\\rho\\!\\int\\boldsymbol{u}_\\phi\\cdot(\\boldsymbol{u}_\\phi\\times\\boldsymbol{\\omega})\\,dV-\\rho\\nu\\!\\int|\\nabla\\boldsymbol{u}_\\phi|^2\\,dV",
+   x_zh:"投影到无旋子空间的能量预算。自平流项在积分后为零；修正压力项因散度定理为零。u_φ × ω 是 NS 中波能非粘性变化的唯一通道——由精确计算证明，不是假设。总动能中非线性项做功整体为零，但此处考察的是波子空间能量，耦合项不消失。",
+   x_en:"Energy budget projected onto the irrotational subspace. Self-advection integrates to zero; modified pressure vanishes by divergence theorem. u_φ × ω is the sole non-viscous channel for wave energy change — proven exactly, not assumed. Total KE nonlinear work vanishes globally, but here we examine wave-subspace energy where the coupling term survives."},
   {l_zh:"粘性通道排除",l_en:"Viscous Channel Excluded",
-   x_zh:"分子粘性衰减率 μ_visc ~ 4νk³ ~ 10⁻¹¹ m⁻¹，比观测 ~10⁻⁷ 低 4 个量级（长周期涌浪可达 4.2 个量级）。",
-   x_en:"Molecular viscous rate μ_visc ~ 4νk³ ~ 10⁻¹¹ m⁻¹, four orders of magnitude below observations ~10⁻⁷ (up to 4.2 orders for long-period swell)."},
+   x_zh:"分子粘性空间衰减率 μ_visc = 4νk²/c_g ~ 10⁻¹¹ m⁻¹（ν ~ 10⁻⁶ m²/s, k ~ 0.02 rad/m, c_g ~ 10 m/s），比观测 ~10⁻⁷ 低 4 个量级（长周期涌浪可达 4.2 个量级）。",
+   x_en:"Molecular viscous spatial decay rate μ_visc = 4νk²/c_g ~ 10⁻¹¹ m⁻¹ (ν ~ 10⁻⁶ m²/s, k ~ 0.02 rad/m, c_g ~ 10 m/s), four orders of magnitude below observations ~10⁻⁷ (up to 4.2 orders for long-period swell)."},
  ]}]},
 
 {id:"3ly",n:"04",cl:"#2563eb",
@@ -224,11 +224,11 @@ var NODES = [
  ss:[{t_zh:"GLE 与乘性噪声",t_en:"GLE and Multiplicative Noise",cl:"#7c3aed",it:[
   {l_zh:"三项结构",l_en:"Three-Term Structure",
    eq:"\\frac{da_k}{dt}=i\\omega_k a_k-\\int_0^t K_k(t-s)\\,a_k(s)\\,ds+F_k(t)",
-   x_zh:"自由振荡 + 记忆摩擦 + 随机力。K_k 和 F_k 都由 SVF 的统计性质完全确定，不是独立输入。",
-   x_en:"Free oscillation + memory friction + random force. Both K_k and F_k are fully determined by SVF statistics, not independent inputs."},
-  {l_zh:"乘性噪声的起源",l_en:"Origin of Multiplicative Noise",
-   x_zh:"能量 E_k = |a_k|² 的噪声项 η = 2Re[a_k* F_k] 正比于 a_k · ω'——乘性的。这是因为 SVF 的双线性结构 f_svf = u_φ × ω'（其中 u_φ ∝ a_k）。这是 Itô 因子 2 的数学根源。",
-   x_en:"Energy noise η = 2Re[a_k* F_k] is proportional to a_k · ω' — multiplicative. This follows from SVF's bilinear structure f_svf = u_φ × ω' (where u_φ ∝ a_k). This is the mathematical origin of the Itô factor of 2."},
+   x_zh:"自由振荡 + 记忆摩擦 + 随机力。K_k 和 F_k 都由 SVF 的统计性质完全确定，不是独立输入。F_k(t) 对 a_k 方程而言是加性力；乘性噪声在转到能量 E_k = ⟨|a_k|²⟩/2 的动力学后才显现。",
+   x_en:"Free oscillation + memory friction + random force. Both K_k and F_k are fully determined by SVF statistics, not independent inputs. F_k(t) is additive in the a_k equation; multiplicative noise emerges only in the energy E_k = ⟨|a_k|²⟩/2 dynamics."},
+  {l_zh:"能量动力学中的乘性噪声",l_en:"Multiplicative Noise in Energy Dynamics",
+   x_zh:"能量 E_k = |a_k|²/2 的噪声项 η = Re[a_k* F_k] 正比于 a_k · ω'——乘性的。这是因为 SVF 的双线性结构 f_svf = u_φ × ω'（其中 u_φ ∝ a_k）。归一化约定 E_k = |a_k|²/2 确保 FDR-II 和 Green–Kubo 公式分母统一为 2E_k = ⟨|a_k|²⟩。",
+   x_en:"Energy noise η = Re[a_k* F_k] is proportional to a_k · ω' — multiplicative. This follows from SVF's bilinear structure f_svf = u_φ × ω' (where u_φ ∝ a_k). The convention E_k = |a_k|²/2 ensures FDR-II and Green–Kubo denominators consistently read 2E_k = ⟨|a_k|²⟩."},
  ]}]},
 
 {id:"fdr",n:"07",cl:"#7c3aed",
@@ -321,8 +321,8 @@ var NODES = [
  ss:[{t_zh:"标度律推导",t_en:"Derivation of Scaling Law",cl:"#059669",it:[
   {l_zh:"核心结果",l_en:"Core Result",
    eq:"\\mu_E(\\omega)=C_{\\mathrm{tot}}\\,\\varepsilon_{\\mathrm{eff}}^{2/3}\\,g^{-7/3}\\,\\omega^{8/3}",
-   x_zh:"将 Kolmogorov 涡度谱代入力核积分，所有积分解析可做。8/3 指数来源：Γ ∝ k^{1/3}（来自 −5/3 谱 + 力核积分），μ = 2Γ/c_g ∝ k^{4/3}，深水色散 k = ω²/g → μ ∝ ω^{8/3}。",
-   x_en:"Substituting Kolmogorov vorticity spectrum into the force kernel, all integrals evaluate analytically. Origin of 8/3: Γ ∝ k^{1/3} (from -5/3 spectrum + force kernel), μ = 2Γ/c_g ∝ k^{4/3}, deep-water dispersion k = ω²/g → μ ∝ ω^{8/3}."},
+   x_zh:"将 Kolmogorov 涡度谱代入力核积分，所有积分解析可做。8/3 指数来源：力核积分中 τ_eff = 1/(qc_g) 引入一个 c_g⁻¹ 因子，Γ(k) ∝ ε^{2/3} k^{1/3} / c_g（几何核峰值 q ~ k + 涡度谱 q^{1/3} + 去相关 1/(qc_g)）；空间衰减率 μ = 2Γ/c_g ∝ ε^{2/3} k^{1/3} / c_g²；深水 c_g ∝ k^{-1/2} → c_g² ∝ k^{-1} → μ ∝ k^{1/3+1} = k^{4/3}；再由色散 k = ω²/g → μ ∝ ω^{8/3}。",
+   x_en:"Substituting Kolmogorov vorticity spectrum into the force kernel, all integrals evaluate analytically. Origin of 8/3: τ_eff = 1/(qc_g) introduces c_g⁻¹ into Γ, giving Γ(k) ∝ ε^{2/3} k^{1/3} / c_g (from geometric kernel peak q ~ k + vorticity spectrum q^{1/3} + decorrelation 1/(qc_g)); spatial decay rate μ = 2Γ/c_g ∝ ε^{2/3} k^{1/3} / c_g²; deep water c_g ∝ k^{-1/2} → c_g² ∝ k^{-1} → μ ∝ k^{1/3+1} = k^{4/3}; then dispersion k = ω²/g → μ ∝ ω^{8/3}."},
  ]},{t_zh:"C_tot = 2π/3 的五因子分解",t_en:"Five-Factor Decomposition: C_tot = 2π/3",cl:"#059669",it:[
   {l_zh:"分解公式",l_en:"Decomposition",
    eq:"C_{\\mathrm{tot}}=4\\cdot C_K\\cdot \\widetilde{G}_{\\mathrm{geom}}\\cdot C_{\\mathcal{S}}\\cdot C_\\tau\\cdot C_E=\\frac{2\\pi}{3}\\approx 2.094",
@@ -349,9 +349,9 @@ var NODES = [
    x_zh:"方差系数 B = β_ξ（对数变换不改变领阶方差）。c₀ = B/A = β_ξ/β_ξ = 1。2 和 1 都是精确结构常数，由 FDR-II 的 α = β_ξ/2 + 双线性耦合代数完全确定。不假设 C_F(τ) 的函数形式，不需要热平衡，不用 ad hoc 闭合。",
    x_en:"Variance coefficient B = β_ξ (log transform preserves leading-order variance). c₀ = B/A = β_ξ/β_ξ = 1. Both 2 and 1 are exact structural constants, fully determined by FDR-II's α = β_ξ/2 + bilinear coupling algebra. No assumption on C_F(τ) form, no thermal equilibrium, no ad hoc closure."},
  ]},{t_zh:"历史影响",t_en:"Historical Impact",cl:"#dc2626",it:[
-  {l_zh:"所有卫星估计量 = 2μ_E",l_en:"All Satellite Estimators = 2μ_E",
-   x_zh:"Snodgrass (1966) 到 Stopa (2016) 的所有基于 ln E 回归的卫星估计量测量的都是 2μ_E，不是 μ_E。一半的 log-slope 来自物理衰减，一半来自噪声诱导的几何漂移。60 年来第一次指出此系统因子。",
-   x_en:"All ln E regression-based satellite estimators from Snodgrass (1966) to Stopa (2016) measure 2μ_E, not μ_E. Half of the log-slope comes from physical decay, half from noise-induced geometric drift. First identification of this systematic factor in 60 years."},
+  {l_zh:"卫星估计量的 Itô 偏差",l_en:"Itô Bias in Satellite Estimators",
+   x_zh:"Snodgrass (1966) 到 Stopa (2016) 的所有基于 ln E 回归的卫星估计量，其 SVF 贡献部分测量的是 2μ_E 而非 μ_E——一半来自物理衰减 Γ，一半来自乘性噪声的 Itô 修正。总观测 log-slope 为 2μ_E + μ_v（Dore 层流粘性贡献 ~13–21%）。60 年来第一次指出此系统因子。",
+   x_en:"All ln E regression-based satellite estimators from Snodgrass (1966) to Stopa (2016): the SVF contribution measures 2μ_E, not μ_E — half from physical damping Γ, half from multiplicative-noise Itô correction. The total observed log-slope is 2μ_E + μ_v (Dore laminar viscous contribution ~13–21%). First identification of this systematic factor in 60 years."},
  ]}]},
 
 {id:"clt",n:"13",cl:"#db2777",
@@ -401,15 +401,15 @@ var NODES = [
    x_zh:"路径越长 → S 越大 → 负值率越低（vs L）；频率越高 → μ 越大 → 负值率越低（vs ω）。两者均与理论零参数曲线定量一致。频率依赖性是 ω^{8/3} 标度律的独立验证——从分布而非均值检验。",
    x_en:"Longer paths → larger S → lower negative rate (vs L); higher frequency → larger μ → lower negative rate (vs ω). Both quantitatively consistent with zero-parameter curves. Frequency dependence is an independent verification of ω^{8/3} — tested through the distribution rather than the mean."},
   {l_zh:"β profile likelihood",l_en:"β Profile Likelihood",
-   x_zh:"β_MLE = 1.30, 95% CI [0.95, 1.64]。零参数预测 β = 1 落在 95% CI 和 C_tot 理论范围 [1.10, 3.34] 内。包含 Dore 层流粘性贡献（总衰减的 ~13–21%）后 β_MLE 更接近 1。联合 profiling (β, c₀, σ_meas) 保持 β = 1 在 CI 内。",
-   x_en:"β_MLE = 1.30, 95% CI [0.95, 1.64]. Zero-parameter prediction β = 1 lies within both 95% CI and theoretical C_tot range [1.10, 3.34]. Including Dore laminar viscous contribution (~13–21% of total) shifts β_MLE closer to unity. Joint profiling over (β, c₀, σ_meas) keeps β = 1 within CI."},
+   x_zh:"β_MLE = 1.30, 95% CI [0.95, 1.64]。零参数预测 β = 1 落在 95% CI 内。β 的理论区间 [0.53, 1.59]（对应 C_tot ∈ [1.10, 3.34]，由 β = C_tot/(2π/3) 换算）也包含 β = 1。包含 Dore 层流粘性贡献（总衰减的 ~13–21%）后 β_MLE 更接近 1。联合 profiling (β, c₀, σ_meas) 保持 β = 1 在 CI 内。",
+   x_en:"β_MLE = 1.30, 95% CI [0.95, 1.64]. Zero-parameter prediction β = 1 lies within the 95% CI. The theoretical β range [0.53, 1.59] (corresponding to C_tot ∈ [1.10, 3.34] via β = C_tot/(2π/3)) also contains β = 1. Including Dore laminar viscous contribution (~13–21% of total) shifts β_MLE closer to unity. Joint profiling over (β, c₀, σ_meas) keeps β = 1 within CI."},
   {l_zh:"可靠性图与覆盖率",l_en:"Reliability Diagram and Coverage",
    x_zh:"c₀ = 1 时：1σ/2σ 覆盖率 76%/94%（名义 68%/95%）。c₀,MLE = 0.78 时：73%/94%。预测方差解释观测散布的大部分。PIT 直方图近似均匀。",
    x_en:"At c₀ = 1: 1σ/2σ coverage 76%/94% (nominal 68%/95%). At c₀,MLE = 0.78: 73%/94%. Predicted variance explains most of observed scatter. PIT histogram approximately uniform."},
  ]},{t_zh:"图4 + 图5 互补",t_en:"Fig 4 + Fig 5 Complementarity",cl:"#dc2626",it:[
   {l_zh:"两层检验缺一不可",l_en:"Both Layers Indispensable",
-   x_zh:"图4 = 系综均值层面（量级对不对？β = 1 检验）。图5 = 条件分布层面（物理图像对不对？c₀ = 1 检验）。前者是严格零参数预测；后者是闭合检验（c₀ 更敏感于环境输入质量）。五条独立检验线：系综均值量级、全球空间分布、负值率 vs 路径长度、负值率 vs 频率、预测覆盖率。",
-   x_en:"Fig 4 = ensemble mean level (is the magnitude right? β = 1 test). Fig 5 = conditional distribution level (is the physical picture right? c₀ = 1 test). The former is a strict zero-parameter prediction; the latter is a closure test (c₀ is more sensitive to environmental input quality). Five independent test lines: ensemble-mean magnitude, global spatial pattern, negative fraction vs path length, negative fraction vs frequency, predictive coverage."},
+   x_zh:"图4 = 系综均值层面（量级对不对？β = 1 检验）。图5 = 条件分布层面（物理图像对不对？c₀ = 1 检验）。前者是严格零参数预测；后者是闭合检验（c₀ 更敏感于环境输入质量）。五条独立检验线：系综均值量级、全球空间分布、负值率 vs 路径长度、负值率 vs 频率、预测覆盖率。注：\"零可调参数\"指前向均值预测 μ_E(ω)；β_MLE, c₀,MLE, σ_meas 仅出现在验证/诊断的 profile likelihood 中，不用于生成理论曲线。",
+   x_en:"Fig 4 = ensemble mean level (is the magnitude right? β = 1 test). Fig 5 = conditional distribution level (is the physical picture right? c₀ = 1 test). The former is a strict zero-parameter prediction; the latter is a closure test (c₀ is more sensitive to environmental input quality). Five independent test lines: ensemble-mean magnitude, global spatial pattern, negative fraction vs path length, negative fraction vs frequency, predictive coverage. Note: 'zero free parameters' refers to the forward mean prediction μ_E(ω); fitted β_MLE, c₀,MLE, σ_meas appear only in validation/diagnostic profiling, not in generating the theory curve."},
  ]}]},
 ];
 
