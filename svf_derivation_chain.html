@@ -235,7 +235,7 @@ var NODES = [
    x_en:"Free oscillation + memory friction + random force. Both K_k and F_k are fully determined by SVF statistics, not independent inputs."},
   {l_zh:"乘性噪声的起源",l_en:"Origin of Multiplicative Noise",
    x_zh:"能量 E_k = |a_k|² 的噪声项 η = 2Re[a_k* F_k] 正比于 a_k · ω'——乘性的。这是因为 SVF 的双线性结构 f_svf = u_φ × ω'（其中 u_φ ∝ a_k）。这是 Itô 因子 2 的数学根源。",
-   x_en:"With E_k = ½|a_k|², the instantaneous energy transfer rate is Ẇ_k = Re(a*_k F_k). Because F_k is bilinear in a_k (through u_φ ∝ a_k in f_svf = u_φ × ω'), Ẇ_k is proportional to |a_k|² · ω' — multiplicative noise in the energy dynamics. This bilinear structure is the mathematical origin of the Itô factor of 2."},
+   x_en:"With E_k = ½|a_k|², the instantaneous energy transfer rate is Ẇ_k = Re(a*_k F_k) (SI S6 A, Eq.S.158). Because u_φ ∝ a_k, F_k is linear in a_k: writing F_k = a_k η_k where η_k depends only on the bath (SI S6 A), gives Ẇ_k = |a_k|² Re(η_k) = 2E_k Re(η_k). The energy noise is therefore multiplicative in E_k. This bilinear structure (a*_k from outside, a_k inside F_k) is the mathematical origin of the Itô factor of 2."},
  ]}]},
 
 {id:"fdr",n:"07",cl:"#7c3aed",
