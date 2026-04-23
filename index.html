@@ -195,6 +195,23 @@ body {
   background: linear-gradient(135deg, #7c3aed, #4f46e5);
 }
 
+
+.feature-grid {
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.feature-item {
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(91,184,245,0.14);
+  background: rgba(12,35,64,0.45);
+  color: rgba(247,249,252,0.75);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
 .demo-label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.65rem;
@@ -368,6 +385,7 @@ body {
         <div class="demo-title">SVF Derivation Architecture</div>
         <div class="demo-desc">Complete derivation chain from Navier-Stokes to the zero-parameter swell dissipation prediction.</div>
       </a>
+
     </div>
   </section>
 
@@ -384,6 +402,20 @@ body {
       <span class="tag">CFOSAT / SWOT</span>
       <span class="tag">Radiochemistry Monitoring</span>
       <span class="tag">Field Campaigns</span>
+    </div>
+  </section>
+
+
+  <section class="section">
+    <div class="section-title">SVF Website Blueprint（主页版）</div>
+    <div class="about-text">
+      按你的要求仅改主页：把“最丰富的SVF介绍”压缩到一个页面，按<strong>30秒摘要</strong>、<strong>3分钟证据链</strong>、<strong>30分钟推导入口</strong>三层呈现，让评审、同行和合作方都能快速找到对应信息。
+    </div>
+    <div class="feature-grid">
+      <div class="feature-item"><strong>30秒摘要：</strong>一句话说明SVF解决Snodgrass悖论、零拟合参数、可被观测验证。</div>
+      <div class="feature-item"><strong>3分钟证据链：</strong>理论关系式 → 数值敏感性 → CFOSAT/SWOT/浮标对比结果。</div>
+      <div class="feature-item"><strong>30分钟推导：</strong>直接跳转现有<em>SVF Derivation Architecture</em>查看完整数学链条。</div>
+      <div class="feature-item"><strong>对外传播：</strong>保留中英双语术语、常见质疑Q&A、合作与数据复现入口。</div>
     </div>
   </section>
 
